@@ -17,12 +17,15 @@
 	<link href="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.css" rel="stylesheet">
 	<link href="https://cdn.bootcss.com/codemirror/5.38.0/theme/base16-light.css" rel="stylesheet">
 	<script src="https://cdn.bootcss.com/codemirror/5.38.0/mode/javascript/javascript.js"></script>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
 	<script id="code" src="main.js"></script>
 </head>
 
 <body onload="init()">
+
 	<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-		<h3 class="my-0 mr-md-auto font-weight-normal"><b>Qu</b>Playground</h3>
+		<h3 class="my-0 mr-md-auto font-weight-normal">
+			<b>Qu</b>Playground</h3>
 		<nav class="my-2 my-md-0 mr-md-3">
 			<a class="p-2 text-dark" href="#">Developing</a>
 		</nav>
@@ -33,46 +36,29 @@
 			<div id="myPaletteDiv" style="width: 150px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
 			<div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
 		</div>
-		<button type="button" class="btn btn-warning" style="width:33%" onclick="save()">Save↓</button>
-		<button type="button" class="btn btn-info" style="width:33%" onclick="load()">Load↑</button>
-		<button type="button" class="btn btn-success" style="width:33%" onclick="refresh()">Refresh↓↑</button>
-		<br />
+		<button type="button" class="btn btn-primary" style="width:25%" onclick="save()">
+			Save
+			<i class="fa fa-download fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-secondary" style="width:25%" onclick="load()">
+			Load
+			<i class="fa fa-upload fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-success" style="width:23.8%" onclick="refresh()">
+			Refresh
+			<i class="fa fa-refresh fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-danger" style="width:25%" onclick="run()">
+			Run
+			<i class="fa fa-play-circle fa-1.5x"></i>
+		</button>
+		<br>
 		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
-				{ "class": "go.GraphLinksModel",
-				"nodeDataArray": [ 
-			{"key":"Program1", "text":"Program1", "isGroup":true, "category":"Program", "loc":"0 0"},
-			{"key":"Program2", "text":"Program2", "isGroup":true, "category":"Program", "loc":"0 266.0371343025072"},
-			{"key":"Step1", "text":"Step1", "isGroup":true, "group":"Program1", "color":"lightblue", "loc":"0 23.522847498307936", "size":"87.43962606276106 200"},
-			{"key":"Step2", "text":"Step2", "isGroup":true, "group":"Program1", "color":"lightgreen", "loc":"89 23.522847498307936", "size":"87.43962606276106 200"},
-			{"key":"Step3", "text":"Step3", "isGroup":true, "group":"Program1", "color":"lightyellow", "loc":"178 23.522847498307936", "size":"87.43962606276106 200"},
-			{"key":"Step4", "text":"Step4", "isGroup":true, "group":"Program1", "color":"orange", "loc":"267 23.522847498307936", "size":"87.43962606276106 200"},
-			{"key":"oneA", "group":"Step1", "loc":"12 35.52284749830794"},
-			{"key":"oneB", "group":"Step1", "loc":"12 71.52284749830794"},
-			{"key":"twoA", "group":"Step2", "loc":"101 35.52284749830794"},
-			{"key":"twoB", "group":"Step2", "loc":"101 71.52284749830794"},
-			{"key":"threeA", "group":"Step3", "loc":"190 35.52284749830794"},
-			{"key":"fourA", "group":"Step4", "loc":"279 35.52284749830794"},
-			{"key":"fourB", "group":"Step4", "loc":"279 71.52284749830794"},
-			{"key":"fourC", "group":"Step4", "loc":"279 107.52284749830794"},
-			{"key":"Step5", "text":"Step5", "isGroup":true, "group":"Program2", "color":"lightyellow", "loc":"0 289.55998180081514", "size":"87.43962606276106 200"},
-			{"key":"Step6", "text":"Step6", "isGroup":true, "group":"Program2", "color":"lightgreen", "loc":"89 289.55998180081514", "size":"87.43962606276106 200"},
-			{"key":"fiveA", "group":"Step5", "loc":"12 301.55998180081514"},
-			{"key":"sixA", "group":"Step6", "loc":"101 301.55998180081514"}
-			 ],
-				"linkDataArray": [ 
-			{"from":"oneA", "to":"twoA"},
-			{"from":"oneB", "to":"twoB"},
-			{"from":"twoA", "to":"threeA"},
-			{"from":"twoB", "to":"threeA"},
-			{"from":"threeA", "to":"fourA"},
-			{"from":"threeA", "to":"fourB"},
-			{"from":"threeA", "to":"fourC"},
-			{"from":"fiveA", "to":"sixA"}
-			 ]}
-			</textarea>
+			// paste your model here
+		</textarea>
 	</div>
 	<!-- JSSB -->
-	<div class="modal fade" id="JSBB_modal" tabindex="-1" role="dialog" aria-labelledby="设置" aria-hidden="true">
+	<div class="modal fade" id="JSBB_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -80,11 +66,11 @@
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div style="text-align:center;">
-					<textarea id="JSBB_modal_code" style="width: 90%" align="center"> node_id</textarea>
+					<textarea id="JSBB_code" style="width: 90%" align="center"> node_id</textarea>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">更改</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">apply</button>
 				</div>
 			</div>
 			<!-- /.modal-content -->
@@ -93,37 +79,22 @@
 	</div>
 
 	<!-- Qgate -->
-	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="设置" aria-hidden="true">
-		<div class="modal-dialog">
+	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog">Settings
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title" id="myModalLabel">Settings</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
-
-				<form class="form-horizontal" align="center" style:"width:80%">
-					<fieldset>
-						<div class="control-group">
-							<!-- Text input-->
-							<label class="control-label" for="input01">Input qsize</label>
-							<div class="controls">
-								<input type="text" placeholder="1" class="input-xlarge">
-								<p class="help-block"></p>
-							</div>
-						</div>
-						<div class="control-group">
-							<!-- Text input-->
-							<label class="control-label" for="input01">Output qsize</label>
-							<div class="controls">
-								<input type="text" placeholder="1" class="input-xlarge">
-								<p class="help-block"></p>
-							</div>
-						</div>
-						<div class="control-group">
+				<div class="center-block">
+					<form class="form-horizontal" align="center">
+						<fieldset>
 							<!-- Select Basic -->
-							<label class="control-label">Gate Type</label>
-							<div class="controls">
-								<select class="input-xlarge">
+							<div class="controls" align="center">
+								<label class="control-label">gateType</label>
+								<select class="input-xlarge" id="Qgate_gtype">
+									<option>|0></option>
+									<option>|1></option>
 									<option>Identity</option>
 									<option>PauliX</option>
 									<option>PauliZ</option>
@@ -132,15 +103,35 @@
 									<option>Phase</option>
 									<option>PiD8</option>
 									<option>CNOT</option>
+									<option>Measure</option>
 								</select>
-							</div>
-						</div>
-					</fieldset>
-				</form>
+								<br>
 
+							</div>
+							<label class="control-label">&ensp;&ensp;inputSize</label>
+							<input type="number" placeholder="" id="Qgate_isize">
+							<br>
+							<label class="control-label">outputSize</label>
+							<input type="number" placeholder="" id="Qgate_osize">
+							<div class="control-group">
+								<!-- Multiple Checkboxes -->
+								<div class="controls">
+									<!-- Inline Checkboxes -->
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_fromJS"> fromJS
+									</label>
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_toJS"> toJS
+									</label>
+								</div>
+							</div>
+
+						</fieldset>
+					</form>
+				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" onclick="closeQgateModal()" data-dismiss="modal">更改</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeQgateModal()" data-dismiss="modal">apply</button>
 				</div>
 			</div>
 			<!-- /.modal-content -->

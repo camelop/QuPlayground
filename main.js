@@ -1,39 +1,34 @@
 // These parameters need to be set before defining the templates.
 var MINLENGTH = 200;  // this controls the minimum length of any swimStep
 var MINBREADTH = 20;  // this controls the minimum breadth of any non-collapsed swimStep
+
+// manage modals
 var lastSrc;
 function openJSBBModal(e, src) {
-  console.log("OpenJSBBModal triggered");
   lastSrc = src;
-  $('#JSBB_modal_code').val(src.data.code);
+  $('#JSBB_code').val(src.data.code);
   $('#JSBB_modal').modal();
-  /*JSBB_modal_code = document.getElementById("JSBB_modal_code");
-  console.log(JSBB_modal_code)
-  var myCodeMirror = CodeMirror.fromTextArea(JSBB_modal_code, {
-    lineNumbers: true,
-    theme: "base16-light"
-  });*/
 }
-
 function closeJSBBModal(e) {
-  lastSrc.data.code = $('#JSBB_modal_code').val();
+  lastSrc.data.code = $('#JSBB_code').val();
 }
 
 function openQgateModal(e, src) {
-  console.log("OpenQgateModal triggered");
   lastSrc = src;
-  $('#Qgate_modal_code').val(src.data.code);
+  $('#Qgate_gtype').val(src.data.gtype);
+  $('#Qgate_isize').val(src.data.isize);
+  $('#Qgate_osize').val(src.data.osize); 
+  $('#Qgate_fromJS').get(0).checked = "fromJSBB" in src.data && src.data.fromJSBB;
+  $('#Qgate_toJS').get(0).checked = "toJSBB" in src.data && src.data.toJSBB;
   $('#Qgate_modal').modal();
-  /*JSBB_modal_code = document.getElementById("JSBB_modal_code");
-  console.log(JSBB_modal_code)
-  var myCodeMirror = CodeMirror.fromTextArea(JSBB_modal_code, {
-    lineNumbers: true,
-    theme: "base16-light"
-  });*/
 }
-
 function closeQgateModal(e) {
-  lastSrc.data.code = $('#Qgate_modal_code').val();
+  if ($('#Qgate_gtype').val() != null) lastSrc.data.gtype = $('#Qgate_gtype').val();
+  lastSrc.data.isize = parseInt($('#Qgate_isize').val());
+  lastSrc.data.osize = parseInt($('#Qgate_osize').val());
+  lastSrc.data.fromJSBB = $('#Qgate_fromJS').get(0).checked;
+  lastSrc.data.toJSBB = $('#Qgate_toJS').get(0).checked;
+  updateCrossStepLinks();
 }
 
 // some shared functions
@@ -46,6 +41,7 @@ function relayoutSteps() {
     Step.layout.isValidLayout = false;  // force it to be invalid
   });
   myDiagram.layoutDiagram();
+  updateCrossStepLinks();
 }
 
 // this is called after nodes have been moved or Steps resized, to layout all of the Program Groups again
@@ -53,6 +49,7 @@ function relayoutDiagram() {
   myDiagram.layout.invalidateLayout();
   myDiagram.findTopLevelGroups().each(function(g) { if (g.category === "Program") g.layout.invalidateLayout(); });
   myDiagram.layoutDiagram();
+  updateCrossStepLinks();
 }
 
 // compute the minimum size of a Program Group needed to hold all of the Step Groups
@@ -161,9 +158,13 @@ go.Diagram.inherit(SingleProgramLayout, ProgramLayout);
 var program_cnt;
 
 // connect correct links
+
+var group_v = {};
+var group = [];
 function updateCrossStepLinks() {
-  var group_v = {};
-  var group = [];
+  myDiagram.layout.invalidateLayout();
+  group_v = {};
+  group = [];
   myDiagram.nodes.each(function(nw){
     if (nw.data.isGroup) {
       if (nw.data.category === "Program") return;
@@ -180,6 +181,15 @@ function updateCrossStepLinks() {
     if (a.location.x > b.location.x) return 1;
     return 0;
   })
+  for (k in group_v) {
+    group_v[k].sort(function(a, b){
+      if (a.location.y < b.location.y) return -1;
+      if (a.location.y > b.location.y) return 1;
+      if (a.location.x < b.location.x) return -1;
+      if (a.location.x > b.location.x) return 1;
+      return 0;
+    })
+  }
   linkData = [];
   bin = []; bin_f = 0;
   for (l=0; l<group.length-1; ++l) {
@@ -230,7 +240,7 @@ function updateCrossStepLinks() {
     // sp JSBB
     for (i=0; i<group_v[g_l.key].length; ++i) {
       ll = group_v[g_l.key][i];
-      if ("toJSBB" in ll.data && ll.data.toJSBB === true) {
+      if ("toJSBB" in ll.data && ll.data.toJSBB == true) {
         nw = {}
         nw.from = ll.key;
         nw.to = group_v[g_r.key][0].key;
@@ -239,7 +249,7 @@ function updateCrossStepLinks() {
     }      
     for (i=0; i<group_v[g_r.key].length; ++i) {
       rr = group_v[g_r.key][i];
-      if ("fromJSBB" in rr.data && rr.data.fromJSBB === true) {
+      if ("fromJSBB" in rr.data && rr.data.fromJSBB == true) {
         nw = {}
         nw.from = group_v[g_l.key][0].key;
         nw.to = rr.key;
@@ -247,6 +257,8 @@ function updateCrossStepLinks() {
       }
     }
   }
+  //update color
+  for (i in group) group[i].updateTargetBindings(); 
   myDiagram.model.linkDataArray = linkData;
 }
 
@@ -307,11 +319,17 @@ function init() {
       } // limit dragging of Nodes to stay within the containing Group, defined above
     ));
 
+    function QgateColorConverter(nodeData, elt) {
+      if (nodeData.gtype == "Measure") return "green";
+      return "blue";
+    }
+
     myDiagram.nodeTemplateMap.add("Qgate", // represent a JS program basic block
     $(go.Node, "Auto",
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       $(go.Shape, "Rectangle",
-        { fill: "blue", portId: "", cursor: "cell", fromLinkable: false, toLinkable: false}),
+        { portId: "", cursor: "cell", fromLinkable: false, toLinkable: false}, 
+        new go.Binding("fill", "", QgateColorConverter).makeTwoWay()),
       $(go.TextBlock, { editable: false, margin: 10, cursor: "cell", stroke: "white"},
         new go.Binding("text", "gtype").makeTwoWay()),
       { dragComputation: function(part, pt, gridpt) {
@@ -334,6 +352,15 @@ function init() {
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
     ];
+  }
+  function stepColorConverter(nodeData, elt) {
+    if (nodeData.key in group_v) {
+      for (i in group_v[nodeData.key]) {
+        nw = group_v[nodeData.key][i];
+        if ("gtype" in nw.data && nw.data.gtype == "Measure") return "lightgreen";
+      }
+    }
+    return "lightgrey";
   }
 
   // each Group is a "swimStep" with a header on the left and a resizable Step on the right
@@ -379,6 +406,7 @@ function init() {
           }
         },
         subGraphExpandedChanged: function(grp) {
+          return;
           var shp = grp.resizeObject;
           if (grp.diagram.undoManager.isUndoingRedoing) return;
           if (grp.isSubGraphExpanded) {
@@ -399,8 +427,8 @@ function init() {
         $(go.Panel, "Horizontal",  // this is hidden when the swimStep is collapsed
           new go.Binding("visible", "isSubGraphExpanded").ofObject(),
           $(go.Shape, "Circle",
-            { width: 8, height: 8, fill: "lightgrey" },
-            new go.Binding("fill", "color")),
+            { width: 8, height: 8 },
+            new go.Binding("fill", "", stepColorConverter).makeTwoWay()),
           $(go.TextBlock,  // the Step label
             { font: "bold 13pt sans-serif", editable: true, margin: new go.Margin(0, 0, 0, 5) },
             new go.Binding("text", "text").makeTwoWay())
@@ -409,8 +437,8 @@ function init() {
       ),  // end Horizontal Panel
       $(go.Panel, "Auto",  // the Step consisting of a background Shape and a Placeholder representing the subgraph
         $(go.Shape, "Rectangle",  // this is the resized object
-          { name: "SHAPE", fill: "lightgrey" }, 
-          new go.Binding("fill", "color"),
+          { name: "SHAPE" }, 
+          new go.Binding("fill", "", stepColorConverter).makeTwoWay(),
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)),
         $(go.Placeholder,
           { padding: new go.Margin(30, 20, 30, 20),   alignment: go.Spot.TopLeft }),
@@ -469,28 +497,28 @@ function init() {
   // define some sample graphs in some of the Steps
   myDiagram.model = new go.GraphLinksModel(
   [ // node data
-    { key: "Program1", text: "Program1", isGroup: true, category: "Program" },
-    { key: "Step1", text: "Step1", isGroup: true, group: "Program1" },
-    { key: "Step2", text: "Step2", isGroup: true, group: "Program1" },
-    { key: "Step3", text: "Step3", isGroup: true, group: "Program1" },
-    { key: "Step4", text: "Step4", isGroup: true, group: "Program1" },
-    { key: "Step5", text: "Step5", isGroup: true, group: "Program1" },
-    { key: "oneA", group: "Step1", category: "JSBB", isize: 0, osize: 1, code: "function(input) {return input+1;}" },
-    { key: "oneB", group: "Step1", category: "Qgate", isize: 0, osize: 1, gtype: "|0>" },
-    { key: "oneB", group: "Step1", category: "Qgate", isize: 0, osize: 1, gtype: "|1>" },
-    { key: "twoA", group: "Step2", category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input*2;}" },
-    { key: "twoB", group: "Step2", category: "Qgate", isize: 1, osize: 1, gtype: "Hadamard" },
-    { key: "threeA", group: "Step3", category: "JSBB", isize: 1, osize: 1, code: "function(input) {alert(input); return input;}" },
-    { key: "threeB", group: "Step3", category: "Qgate", isize: 2, osize: 2, gtype: "C-U", fromJSBB: true },
-    { key: "fourA", group: "Step4", category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input;}" },
-    { key: "fourB", group: "Step4", category: "Qgate", isize: 2, osize: 0, gtype: "Measure", toJSBB: true },
-    { key: "fiveA", group: "Step5", category: "JSBB", isize: 1, osize: 0, code: "function(input) {alert(input);}" },
+    { key: "P1", text: "Program1", isGroup: true, category: "Program" },
+    { key: "P1S1", text: "Step1", isGroup: true, group: "P1" },
+    { key: "P1S2", text: "Step2", isGroup: true, group: "P1" },
+    { key: "P1S3", text: "Step3", isGroup: true, group: "P1" },
+    { key: "P1S4", text: "Step4", isGroup: true, group: "P1" },
+    { key: "P1S5", text: "Step5", isGroup: true, group: "P1" },
+    { key: "a", group: "P1S1", category: "JSBB", isize: 0, osize: 1, code: "function(input) {return input+1;}" },
+    { key: "b", group: "P1S1", category: "Qgate", isize: 0, osize: 1, gtype: "|0>" },
+    { key: "c", group: "P1S1", category: "Qgate", isize: 0, osize: 1, gtype: "|1>" },
+    { key: "d", group: "P1S2", category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input*2;}" },
+    { key: "e", group: "P1S2", category: "Qgate", isize: 1, osize: 1, gtype: "Hadamard" },
+    { key: "f", group: "P1S3", category: "JSBB", isize: 1, osize: 1, code: "function(input) {alert(input); return input;}" },
+    { key: "g", group: "P1S3", category: "Qgate", isize: 2, osize: 2, gtype: "C-U", fromJSBB: true },
+    { key: "h", group: "P1S4", category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input;}" },
+    { key: "i", group: "P1S4", category: "Qgate", isize: 2, osize: 0, gtype: "Measure", toJSBB: true },
+    { key: "j", group: "P1S5", category: "JSBB", isize: 1, osize: 0, code: "function(input) {alert(input);}" },
 
-    { key: "Program2", text: "Program2", isGroup: true, category: "Program" },
-    { key: "Step6", text: "Step6", isGroup: true, group: "Program2" },
-    { key: "Step7", text: "Step7", isGroup: true, group: "Program2", color: "lightgreen" },
-    { key: "sixA", group: "Step6", category: "Qgate", isize: 1, osize: 1, gtype: "|0>" },
-    { key: "sevenA", group: "Step7", category: "Qgate", isize: 1, osize: 1, gtype: "Measure" }
+    { key: "P2", text: "Program2", isGroup: true, category: "Program" },
+    { key: "P2S1", text: "Step1", isGroup: true, group: "P2" },
+    { key: "P2S2", text: "Step2", isGroup: true, group: "P2" },
+    { key: "k", group: "P2S1", category: "Qgate", isize: 1, osize: 1, gtype: "|0>" },
+    { key: "l", group: "P2S2", category: "Qgate", isize: 1, osize: 0, gtype: "Measure" }
   ]);
   
   // add a palette
@@ -501,15 +529,17 @@ function init() {
       scrollsPageOnFocus: true,
       nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
       model: new go.GraphLinksModel([  // specify the contents of the Palette
-        { key: "oneA", group: "Step1", category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input+1;}" },
-        { key: "oneB", group: "Step1", category: "Qgate", isize: 1, osize: 1, gtype: "Hadamard"},
-        { key: "oneB", group: "Step1", category: "Qgate", isize: 0, osize: 1, gtype: "|0>" },
-        { key: "oneB", group: "Step1", category: "Qgate", isize: 0, osize: 1, gtype: "|1>" },
+        { key: "baseJS_",  category: "JSBB", isize: 0, osize: 1, code: "function(input) {return input+1;}" },
+        { key: "base0_",  category: "Qgate", isize: 0, osize: 1, gtype: "|0>" },
+        { key: "base1_",  category: "Qgate", isize: 0, osize: 1, gtype: "|1>" },
+        { key: "baseH_",  category: "Qgate", isize: 1, osize: 1, gtype: "Hadamard" },
+        { key: "baseM_",  category: "Qgate", isize: 2, osize: 0, gtype: "Measure", toJSBB: true },
       ])
     });
   // force all Steps' layouts to be performed
   relayoutSteps();
-  updateCrossStepLinks();
+  sleep(10);
+  relayoutSteps();
 }  // end init
 
 // Show the diagram's model in JSON format
