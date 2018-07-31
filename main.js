@@ -529,7 +529,7 @@ function init() {
       scrollsPageOnFocus: true,
       nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
       model: new go.GraphLinksModel([  // specify the contents of the Palette
-        { key: "baseJS_",  category: "JSBB", isize: 0, osize: 1, code: "function(input) {return input+1;}" },
+        { key: "baseJS_",  category: "JSBB", isize: 1, osize: 1, code: "function(input) {return input+1;}" },
         { key: "base0_",  category: "Qgate", isize: 0, osize: 1, gtype: "|0>" },
         { key: "base1_",  category: "Qgate", isize: 0, osize: 1, gtype: "|1>" },
         { key: "baseH_",  category: "Qgate", isize: 1, osize: 1, gtype: "Hadamard" },
@@ -568,4 +568,8 @@ function refresh() {
   save();
   sleep(100); // save is async?
   load();
+}
+
+function run() {
+  //TODO
 }
