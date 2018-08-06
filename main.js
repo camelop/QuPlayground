@@ -68,21 +68,24 @@ function Program(node) {
     var board = $("#Run_text");
     var append = function (mes) {
       if (board.html() === "") {
-        board.html(mes);
-      } else board.html(board.html() + "<br>" + mes);
+        board.html('<li>' + mes + "</li> ");
+      } else board.html(board.html() + " <li>" + mes+ '</li> <div class="divider"></div>');
     }
     try {
       var info = input;
       for (var i in this.stage) {
         nw = this.stage[i];
-        info = nw.run(info)
-        append(nw.name + ": " + JSON.stringify(info));
+        info = nw.run(info);
+        console.log(info);
+        append(nw.name + ": " + syntaxHighlight(info));
       }
     } catch (err) {
       console.log(err);
       alert(err);
     }
+    board.html(board.html()+"</ul>");
   }
+  
 }
 
 function findProgramByKey(key) {
@@ -119,6 +122,9 @@ function Stage(node) {
   this.run = function (input) {
     output = this.handle.run(input);
     if ((typeof(output)) == "undefined") output = input;
+    if ((typeof(input)) == "undefined") input = {};
+    if ((typeof(input.qinfo)) == "undefined") input.qinfo = [];
+    if ((typeof(output)) == "undefined") output = {};
     var qinfo = [];
     // split qinfo for operators
     var cur = 0;
@@ -141,7 +147,10 @@ function Stage(node) {
         //unpack json
         for (var j in oo) {
           if (oo[j] != "qinfo") {
-            output[j] = oo[j];
+            if (j in output) {
+              output[j].push(oo[j]);
+            } else 
+            output[j] = [oo[j]];
           }
         }
         oo = oo["qinfo"];
@@ -159,7 +168,7 @@ function Stage(node) {
     return output;
   }
 }
-
+Qcnt = {}
 function Operator(node) {
   this.name = node.data.gtype;
   this.category = node.data.category;
@@ -175,9 +184,47 @@ function Operator(node) {
       return entry(input);
     } else if (this.category == "Qgate") {
       var gtype = this.node.data.gtype;
-      if (gtype === "Measure") {
-        return {"result": 1};
+      if (gtype === "|0>") {
+        var ret = [];
+        for (var i=0; i<this.osize; ++i) ret.push(new Qubit(0));
+        return ret;
+      } else if (gtype === "|1>") {
+        var ret = [];
+        for (var i=0; i<this.osize; ++i) ret.push(new Qubit(0));
+        return ret;
+      } else if (gtype === "Identity") {
+        return input;
+      } else if (gtype === "PauliX") {
+        return [perform(X, input[0])];
+      } else if (gtype === "PauliZ") {
+        return [perform(Z, input[0])];
+      } else if (gtype === "PauliY") {
+        return [perform(Y, input[0])];
+      } else if (gtype === "Hadamard") {
+        return [perform(H, input[0])];
+      } else if (gtype === "Phase") {
+        return [perform(S, input[0])];
+      } else if (gtype === "PiD8") {
+        return [perform(T, input[0])];
+      } else if (gtype === "CNOT") {
+        var new_stat = new Qstat(input[0], input[1]);
+        new_stat = perform(CNOT, new_stat);
+        return [new_stat, new_stat];
+      } else if (gtype === "Measure") {
+        var nw_id = input[0].id;
+        var to_measure = [];
+        var ret_qinfo = [];
+        for (var i=0; i<this.isize; ++i) {
+          if (input[i].id != nw_id) throw "Measure across system detected, plz split";
+          if (!(input[i].id in Qcnt)) {Qcnt[input[i].id] = 0; }
+          to_measure.push(Qcnt[input[i].id]);
+          ++Qcnt[input[i].id];
+          ret_qinfo.push(new Qstat(input[i]));
+        }
+        var result = measure(input[0], to_measure); //ganranteed same sys
+        return {"result": result, "qinfo": ret_qinfo};
       }
+      alert("Not implement "+this.name)
       if (this.toJSBB) {
         return {"qinfo": input};
       } else return input;
@@ -892,7 +939,7 @@ function init() {
   relayoutSteps();
 
   // for test
-  // openRunModal();
+   openRunModal();
 } // end init
 
 // Show the diagram's model in JSON format
@@ -925,6 +972,7 @@ function refresh() {
 }
 
 function run() {
+  Qcnt = {};
   var config = $("#Run_config");
   var text = $("#Run_text");
   text.html("");

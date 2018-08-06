@@ -1,15 +1,22 @@
 //complex operators
+function const_times(lhs, rhs) {
+	return [lhs * rhs[0], lhs * rhs[1]];
+}
 function times(lhs, rhs) {
 	return [lhs[0]*rhs[0]-lhs[1]*rhs[1], lhs[0]*rhs[1]+lhs[1]*rhs[0]];
 }
 function add(lhs, rhs) {
 	return [lhs[0]+rhs[0], lhs[1]+rhs[1]];
 }
+function abs(x) {
+	return x[0] * x[0] + x[1] * x[1];
+}
 
 //basic element
 function Qubit() {
 	this.state = [[1, 0], [0, 0]]; //(1+0i)|0> + (0+0i)|1>
 	this.qsize = 1;
+	this.id = guid();
 	switch (arguments.length) {
 		case 0:
 			break;
@@ -28,18 +35,33 @@ function Qubit() {
 	}
 }
 
+function S4() {
+	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+}
+function guid() {
+	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
 //system quantum state
 function Qstat() {
+	this.id = guid();
 	switch (arguments.length) {
 		case 0:
 			this.qsize = 0;
 			this.state = [];
 			break;
+		case 1:
+			this.qsize = arguments[0].qsize;
+			this.state = [];
+			for (var i in arguments[0].state) {
+				this.state.push([arguments[0].state[i][0], arguments[0].state[i][1]]);
+			}
+			break;
 		case 2:
 			this.qsize = arguments[0].qsize + arguments[1].qsize;
 			this.state = [];
-			for (i in arguments[0].state) {
-				for (j in arguments[1].state) {
+			for (var i in arguments[0].state) {
+				for (var j in arguments[1].state) {
 					this.state.push(times(arguments[0].state[i], arguments[1].state[j]));
 				}
 			}
@@ -47,6 +69,26 @@ function Qstat() {
 		// other case
 		default:
 			throw "Invalid Qstat init";
+	}
+	this.print = function() {
+		ret = "[";
+		for (var i in this.state) {
+			var nw = this.state[i];
+			if (nw[1] == 0) {
+				ret = ret + nw[0]
+			} else if (nw[0] == 0) {
+				ret = ret + nw[1] + "i"
+			} else {
+				if (nw[1]<0) {
+					ret = ret + nw[0] + nw[1] + "i";
+				} else {
+					ret = ret + nw[0] + "+" + nw[1] + "i";
+				}
+			}
+			ret = ret + "\t";
+			if (i%4 == 3 && i!=this.state.length-1) ret += "\n";
+		}
+		return ret + "]\n";
 	}
 }
 Qubit.prototype = new Qstat()
@@ -64,7 +106,7 @@ function Qgate() {
 	}
 	this.print = function() {
 		ret = ""
-		for (i in this.u) {
+		for (var i in this.u) {
 			row = this.u[i]
 			if (i == 0) ret = ret + "["; else ret = ret + " ";
 			for (j in row) {
@@ -96,19 +138,19 @@ Hadamard = new Qgate(1, 1, [[[0.5**0.5,0],[0.5**0.5,0]],[[0.5**0.5,0],[-(0.5**0.
 Phase = new Qgate(1, 1, [[[1,0],[0,0]],[[0,0],[0,1]]]);
 PiD8 = new Qgate(1, 1, [[[1,0],[0,0]],[[0,0],[0.5**0.5,0.5**0.5]]])
 
-CNOT = new Qgate(2, 2, [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[1,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]]])
+CNOT = new Qgate(2, 2, [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]], [[0,0],[0,0],[1,0],[0,0]]])
 
 I = PauliI; X = PauliX; Z = PauliZ; Y = PauliY;
 H = Hadamard; S = Phase; T = PiD8;
 
 //perform a transform
 function perform(qgate, qstat) {
-	if (qstat.qsize != qgate.isize) throw "Wrong shape";
-	ret = new Qstat();
+	if (qstat.qsize != qgate.isize) throw "Wrong shape while performing \n"+qgate.print()+" on \n"+JSON.stringify(qstat);
+	var ret = new Qstat();
 	ret.qsize = qgate.osize;
 	for (i in qgate.u[0]) ret.state.push([0, 0]);
 	for (i in qgate.u) {
-		row = qgate.u[i];
+		var row = qgate.u[i];
 		for (j in row) {
 			ret.state[j] = add(ret.state[j], times(row[j], qstat.state[i]));
 		}
@@ -116,29 +158,102 @@ function perform(qgate, qstat) {
 	return ret;
 }
 
+function measure(qstat, dim) {
+	show = JSON.stringify;
+	console.log("measure, "+show(qstat)+", "+show(dim))
+	// init result
+	var old_loc = [];
+	var new_loc = [];
+	var result = [];
+	for(var i in dim) {
+		old_loc[i] = (1<<dim[i]);
+		new_loc[i] = (1<<i);
+	}
+	for(var i=0; i<(1<<dim.length); ++i) result.push(0);
+	console.log("qstat: ", qstat)
+	var total = 0;
+	for (var i in qstat.state) {
+		var index = 0;
+		for(var j in dim) {
+			if (i & old_loc[j] > 0) {
+				index += new_loc[j];
+			}
+		}
+		result[index] += abs(qstat.state[i]);
+		total += abs(qstat.state[i]);
+	}
+
+	var roll = Math.random();
+	var cnt = 0.0;
+	console.log("result: ", result);
+	for (var i in result) {
+		var delta =  result[i]/total;
+		if (roll >= cnt && roll <= cnt + delta) {
+			roll = i;
+			break;
+		}
+		cnt += delta;
+	}
+
+	var ret = []
+	for(var i in dim) {
+		if ((roll & new_loc[i]) == 0) {
+			ret.push(0);
+		} else {
+			ret.push(1);
+		}
+	}
+	// then qubit collapse
+	var v = Math.sqrt(total / result[roll]);
+	for (var i in qstat.state) {
+		var index = 0;
+		for(var j in dim) {
+			if (i & old_loc[j] > 0) {
+				index += new_loc[j];
+			}
+		}
+		if (index != roll) {
+			qstat.state[i] = [[0],[0]];
+		} else {
+			qstat.state[i] = const_times(v, qstat.state[i]);
+		}
+	}
+	return ret;
+}
+
 //test func
 function Qtest() {
-	$ = console.log;
+	var $ = console.log;
 	/*
 	testQubit = new Qubit()
 	console.log(testQubit)
 	testQstat = new Qstat()
 	console.log(testQstat)
-	*/
+
 	q0 = new Qubit(0);
-	q1 = new Qubit(1);
+	q1 = new Qubit(0);
 	// $(q1); $(q2);
-	$(perform(Hadamard, q0))
-	$(perform(Hadamard, q1))
-	$(perform(Hadamard, q1))
-	/* Gates */
-	$(I.print())
-	$(X.print())
-	$(Y.print())
-	$(Z.print())
-	$(H.print())
-	$(S.print())
-	$(T.print())
+	q0 = perform(Hadamard, q0);
+	var combine = new Qstat(q0, q1);
+	$(combine)
+
+	$(CNOT.print())
+	combine = perform(CNOT, combine);
+	$(combine.print())
+	*/
+
+	// Bell test
+	for (var i=0; i<100; ++i) {
+		var q0 = new Qubit(0);
+		var q1 = new Qubit(0);
+		q0 = perform(H, q0);
+		var combine = new Qstat(q0, q1);
+		combine = perform(CNOT, combine);
+		//$(combine.print())
+		var r0 = measure(combine, [0])[0];
+		//$(combine.print())
+		var r1 = measure(combine, [1])[0];
+	}
 }
 
-Qtest();
+//Qtest();

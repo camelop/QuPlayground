@@ -18,6 +18,9 @@
 	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.js"></script>
 	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
 	
+	
+	<link href="json_syntax.css" rel="stylesheet">
+	<script src="json_syntax.js"></script>
 	<script src="qubit.js"></script>
 	<script id="code" src="main.js"></script>
 
@@ -58,32 +61,35 @@
 		</button>
 		<br>
 		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
-				{ "class": "go.GraphLinksModel",
-				"nodeDataArray": [ 
-			  {"key":"P1", "text":"Bell Test", "isGroup":true, "category":"Program", "loc":"0 0"},
-			  {"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 200"},
-			  {"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 200"},
-			  {"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
-			  {"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794"},
-			  {"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 101.52284749830794"},
-			  {"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795", "group":"P1S1"},
-			  {"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 200"},
-			  {"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
-			  {"key":"CNOT", "category":"Qgate", "isize":2, "osize":1, "gtype":"CNOT", "loc":"237 101.52284749830794", "group":"P1S22"},
-			  {"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 200"},
-			  {"key":"baseM_", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 101.52284749830794", "group":"P1S222"},
-			  {"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
-			  {"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
-			  {"key":"P1S2222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.38720703125 200"},
-			  {"key":"baseJS_32", "category":"JSBB", "text":"show", "isize":0, "osize":0, "code":"identity = function(x) {return x[\"result\"];}", "loc":"493 53.52284749830794", "group":"P1S2222"}
-			   ],
-				"linkDataArray": [ 
-			  {"from":"b", "to":"e"},
-			  {"from":"e", "to":"CNOT"},
-			  {"from":"base0_", "to":"CNOT"},
-			  {"from":"CNOT", "to":"baseM_"},
-			  {"from":"baseM_", "to":"baseJS_32"}
-			   ]}
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":"P1", "text":"Bell Test", "isGroup":true, "category":"Program", "loc":"0 0"},
+{"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 200"},
+{"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 200"},
+{"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
+{"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794"},
+{"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 101.52284749830794"},
+{"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795", "group":"P1S1"},
+{"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 200"},
+{"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
+{"key":"CNOT", "category":"Qgate", "isize":2, "osize":2, "gtype":"CNOT", "loc":"237 101.52284749830794", "group":"P1S22", "fromJSBB":false, "toJSBB":false},
+{"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 200"},
+{"key":"baseM_", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 101.52284749830794", "group":"P1S222"},
+{"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
+{"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
+{"key":"P1S2222", "text":"Step5", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.38720703125 200"},
+{"key":"baseJS_32", "category":"JSBB", "text":"show", "isize":0, "osize":0, "code":"identity = function(x) {return x[\"result\"];}", "loc":"493 53.52284749830794", "group":"P1S2222"},
+{"key":"baseM_2", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 149.52284749830795", "group":"P1S222"}
+ ],
+  "linkDataArray": [ 
+{"from":"b", "to":"e"},
+{"from":"e", "to":"CNOT"},
+{"from":"base0_", "to":"CNOT"},
+{"from":"CNOT", "to":"baseM_"},
+{"from":"CNOT", "to":"baseM_2"},
+{"from":"baseM_", "to":"baseJS_32"},
+{"from":"baseM_2", "to":"baseJS_32"}
+ ]}
 		</textarea>
 	</div>
 	<!-- JSSB -->
@@ -191,7 +197,7 @@
 						<div class="col-1"></div>
 						<div class="col-10">
 							<textarea id="Run_config" style="width: 100%" rows="5">
-								entry = function(programs) { programs["Program1"].run({happy: true}); }
+	entry = function(programs) { for(var i in programs) {programs[i].run();}}
 							</textarea>
 							<div class="panel">
 								<div class="panel-body" style="word-break:break-all">
