@@ -10,15 +10,18 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.25/go-debug.js"></script>
 		-->
 	<!--Bootstrap CDN-->
-	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
 	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-grid.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-reboot.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.bundle.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.js"></script>
-	<script src="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.js"></script>
-	<link href="https://cdn.bootcss.com/codemirror/5.38.0/codemirror.css" rel="stylesheet">
-	<link href="https://cdn.bootcss.com/codemirror/5.38.0/theme/base16-light.css" rel="stylesheet">
-	<script src="https://cdn.bootcss.com/codemirror/5.38.0/mode/javascript/javascript.js"></script>
 	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+	
+	<script src="qubit.js"></script>
 	<script id="code" src="main.js"></script>
+
+	
 </head>
 
 <body onload="init()">
@@ -36,7 +39,7 @@
 			<div id="myPaletteDiv" style="width: 150px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
 			<div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
 		</div>
-		
+
 		<button type="button" class="btn btn-primary" style="width:24%" onclick="save()">
 			Save
 			<i class="fa fa-download fa-1.5x"></i>
@@ -49,13 +52,38 @@
 			Refresh
 			<i class="fa fa-refresh fa-1.5x"></i>
 		</button>
-		<button type="button" class="btn btn-danger" style="width:24%" onclick="run()">
+		<button type="button" class="btn btn-danger" style="width:24%" onclick="openRunModal()">
 			Run
 			<i class="fa fa-play-circle fa-1.5x"></i>
 		</button>
 		<br>
 		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
-			// paste your model here
+				{ "class": "go.GraphLinksModel",
+				"nodeDataArray": [ 
+			  {"key":"P1", "text":"Bell Test", "isGroup":true, "category":"Program", "loc":"0 0"},
+			  {"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 200"},
+			  {"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 200"},
+			  {"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
+			  {"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794"},
+			  {"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 101.52284749830794"},
+			  {"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795", "group":"P1S1"},
+			  {"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 200"},
+			  {"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
+			  {"key":"CNOT", "category":"Qgate", "isize":2, "osize":1, "gtype":"CNOT", "loc":"237 101.52284749830794", "group":"P1S22"},
+			  {"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 200"},
+			  {"key":"baseM_", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 101.52284749830794", "group":"P1S222"},
+			  {"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
+			  {"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
+			  {"key":"P1S2222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.38720703125 200"},
+			  {"key":"baseJS_32", "category":"JSBB", "text":"show", "isize":0, "osize":0, "code":"identity = function(x) {return x[\"result\"];}", "loc":"493 53.52284749830794", "group":"P1S2222"}
+			   ],
+				"linkDataArray": [ 
+			  {"from":"b", "to":"e"},
+			  {"from":"e", "to":"CNOT"},
+			  {"from":"base0_", "to":"CNOT"},
+			  {"from":"CNOT", "to":"baseM_"},
+			  {"from":"baseM_", "to":"baseJS_32"}
+			   ]}
 		</textarea>
 	</div>
 	<!-- JSSB -->
@@ -66,9 +94,19 @@
 					<h4 class="modal-title" id="myModalLabel">Settings</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
-				<div style="text-align:center;">
-					<textarea id="JSBB_code" style="width: 90%" align="center"> node_id</textarea>
+
+				<div class="row">
+					<div class="col-1"></div>
+					<div class="col-10">
+						description: <br>
+						<input type="text" placeholder="" id="JSBB_description" stype>
+						<br>
+						code: <br>
+						<textarea id="JSBB_code" style="width: 100%"></textarea>
+					</div>
+					<div class="col-1"></div>
 				</div>
+
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
 					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">apply</button>
@@ -81,7 +119,7 @@
 
 	<!-- Qgate -->
 	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
-		<div class="modal-dialog">Settings
+		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title" id="myModalLabel">Settings</h4>
@@ -137,7 +175,41 @@
 			</div>
 			<!-- /.modal-content -->
 		</div>
-		<!-- /.modal -->
+	</div>
+	<!-- Run_modal -->
+	<div class="modal fade bs-example-modal-lg" id="Run_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="gridSystemModalLabel">Run settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-1"></div>
+						<div class="col-10">
+							<textarea id="Run_config" style="width: 100%" rows="5">
+								entry = function(programs) { programs["Program1"].run({happy: true}); }
+							</textarea>
+							<div class="panel">
+								<div class="panel-body" style="word-break:break-all">
+									<p id="Run_text">
+										gzotpa
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-1"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+					<button type="button" class="btn btn-danger" onclick="run()">GO!</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 
