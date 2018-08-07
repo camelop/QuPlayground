@@ -2,7 +2,7 @@
 
 A new way to test your ideas about quantum circuit. 
 
-## A brief guide
+## A brief user guide
 
 ![a](screenshots/help/a.jpg)
 
@@ -35,3 +35,20 @@ Quantum teleportation is a process by which quantum information from one locatio
 ![8](screenshots/help/8.png)
 
 ![e](screenshots/help/e.jpg)
+
+## Features
+
+- Purely JavaScript 
+  - which means cross-platform (Windows/Linux/Android/iOS...)
+- Build from the bottom 
+  - from complex number, matrix, qubit ... all way to the top
+  - less dependency (GoJS for diagrams, Bootstrap for good looking... and no more)
+  - a set of useful tools (Qubit, Qstat...to help you easily manage quantum state)
+  - common Qgates (Pauli-X/Y/Z, Hadamard, C_U, SWAP) with relatively easy setup
+- Easy to tweak (without having to write a lot of code)
+  - serialize to save and load your model
+  - a convenient and intuitive GUI to build quantum circuit
+
+## Collaborators
+
+Special thanks to ```Jingyi Cai```, who helps me a lot in understanding of Shor algorithm and other stuffs.
