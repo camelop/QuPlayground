@@ -96,6 +96,35 @@ Qubit.prototype = new Qstat()
 //uniform transform
 function Qgate() {
 	switch (arguments.length) {
+		case 2:
+			// tensor
+			var a = arguments[0];
+			var b = arguments[1];
+			this.isize = a.isize + b.isize;
+			this.osize = a.osize + b.osize;
+			this.u = [];
+			// construct it
+			for(var i=0; i<2**this.isize; ++i) {
+				var nw = [];
+				for (var j=0; j<2**this.osize; ++j) {
+					nw.push([0,0]);
+				}
+				this.u.push(nw);
+			}
+			for(var i=0; i<a.u.length; ++i) {
+				var row_i = a.u[i];
+				for (var j=0; j<row_i.length; ++j) {
+					var ea = row_i[j];
+					for (var ii=0; ii<b.u.length; ++ii) {
+						var row_ii = b.u[ii];
+						for (var jj=0; jj<row_ii.length; ++jj) {
+							var eb = row_ii[jj];
+							this.u[i*2**b.isize+ii][j*2**b.isize+jj] = times(ea, eb);
+						}
+					}
+				}
+			}
+			break;
 		case 3:
 			this.isize = arguments[0];
 			this.osize = arguments[1];
@@ -144,23 +173,36 @@ I = PauliI; X = PauliX; Z = PauliZ; Y = PauliY;
 H = Hadamard; S = Phase; T = PiD8;
 
 //perform a transform
-function perform(qgate, qstat) {
-	if (qstat.qsize != qgate.isize) throw "Wrong shape while performing \n"+qgate.print()+" on \n"+JSON.stringify(qstat);
-	var ret = new Qstat();
-	ret.qsize = qgate.osize;
-	for (i in qgate.u[0]) ret.state.push([0, 0]);
-	for (i in qgate.u) {
-		var row = qgate.u[i];
-		for (j in row) {
-			ret.state[j] = add(ret.state[j], times(row[j], qstat.state[i]));
+function perform(qgate, qstat, loc) {
+	if (typeof(loc) == "undefined") {
+		if (qstat.qsize != qgate.isize) throw "Wrong shape while performing \n"+qgate.print()+" on \n"+JSON.stringify(qstat);
+		var ret = new Qstat();
+		ret.qsize = qgate.osize;
+		for (i in qgate.u[0]) ret.state.push([0, 0]);
+		for (i in qgate.u) {
+			var row = qgate.u[i];
+			for (j in row) {
+				ret.state[j] = add(ret.state[j], times(row[j], qstat.state[i]));
+			}
 		}
+		return ret;
+	} else {
+		// do local transform
+		var IGI = qgate;
+		for (var i=0; i<loc; ++i) IGI = new Qgate(I, IGI);
+		while (IGI.isize < qstat.qsize) IGI = new Qgate(IGI, I);
+		var ret = perform(IGI, qstat);
+		ret.id = qstat.id;
+		for (var i=0; i<2**qstat.qsize; ++i) {
+			qstat.state[i] = ret.state[i];
+		}
+		return ret;
 	}
-	return ret;
 }
 
 function measure(qstat, dim) {
 	show = JSON.stringify;
-	console.log("measure, "+show(qstat)+", "+show(dim))
+	// console.log("measure, "+show(qstat)+", "+show(dim))
 	// init result
 	var old_loc = [];
 	var new_loc = [];
@@ -170,7 +212,7 @@ function measure(qstat, dim) {
 		new_loc[i] = (1<<i);
 	}
 	for(var i=0; i<(1<<dim.length); ++i) result.push(0);
-	console.log("qstat: ", qstat)
+	// console.log("qstat: ", qstat)
 	var total = 0;
 	for (var i in qstat.state) {
 		var index = 0;
@@ -185,7 +227,7 @@ function measure(qstat, dim) {
 
 	var roll = Math.random();
 	var cnt = 0.0;
-	console.log("result: ", result);
+	// console.log("result: ", result);
 	for (var i in result) {
 		var delta =  result[i]/total;
 		if (roll >= cnt && roll <= cnt + delta) {
@@ -240,7 +282,6 @@ function Qtest() {
 	$(CNOT.print())
 	combine = perform(CNOT, combine);
 	$(combine.print())
-	*/
 
 	// Bell test
 	for (var i=0; i<100; ++i) {
@@ -254,6 +295,18 @@ function Qtest() {
 		//$(combine.print())
 		var r1 = measure(combine, [1])[0];
 	}
+	
+	// gate tensor test
+	var HIH = new Qgate(H, new Qgate(I, H))
+	$(HIH.print())
+
+	// loc perform test
+	var s = new Qstat(new Qubit(1), new Qstat(new Qubit(0), new Qubit(1)));
+	$(s.print())
+	perform(H, s, 1);
+	$(s.print())
+	*/
+
 }
 
-//Qtest();
+// Qtest();

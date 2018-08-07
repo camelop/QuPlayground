@@ -64,9 +64,10 @@ function Program(node) {
       size_cnt += nw.osize;
     }
   }
-  this.run = function (input) {
+  this.run = function (display, input) {
     var board = $("#Run_text");
     var append = function (mes) {
+      if (typeof(display) != "undefined" && !display) return;
       if (board.html() === "") {
         board.html('<li>' + mes + "</li> ");
       } else board.html(board.html() + " <li>" + mes+ '</li> <div class="divider"></div>');
@@ -120,6 +121,7 @@ function Stage(node) {
   }
   this.check = function () {}
   this.run = function (input) {
+    Qcnt = {}
     output = this.handle.run(input);
     if ((typeof(output)) == "undefined") output = input;
     if ((typeof(input)) == "undefined") input = {};
@@ -190,7 +192,7 @@ function Operator(node) {
         return ret;
       } else if (gtype === "|1>") {
         var ret = [];
-        for (var i=0; i<this.osize; ++i) ret.push(new Qubit(0));
+        for (var i=0; i<this.osize; ++i) ret.push(new Qubit(1));
         return ret;
       } else if (gtype === "Identity") {
         return input;
@@ -201,15 +203,42 @@ function Operator(node) {
       } else if (gtype === "PauliY") {
         return [perform(Y, input[0])];
       } else if (gtype === "Hadamard") {
+        if (input[0].qsize > 1) {
+          var ret = perform(H, input[0], Qcnt[input[0].id]);
+          ++Qcnt[input[0]].id;
+          return [ret];
+        }
         return [perform(H, input[0])];
       } else if (gtype === "Phase") {
         return [perform(S, input[0])];
       } else if (gtype === "PiD8") {
         return [perform(T, input[0])];
       } else if (gtype === "CNOT") {
-        var new_stat = new Qstat(input[0], input[1]);
+        var  new_stat = new Qstat(input[0], input[1]);
         new_stat = perform(CNOT, new_stat);
         return [new_stat, new_stat];
+      } else if (gtype === "C_U") {
+        var u = all.u;
+        var new_stat = input[0];
+        var last = input[0];
+        for (var i=1; i<this.isize; ++i) {
+          if (input[i].id == last.id) continue;
+          new_stat = new Qstat(new_stat, input[i]);
+        }
+        var g = new Qgate(this.isize, this.osize, u);
+        Qcnt[new_stat.id] = this.iszie;
+        if (new_stat.qsize != this.isize) {
+          new_stat = perform(g, new_stat, 0);
+        } else {
+          new_stat = perform(g, new_stat);
+        }
+        var ret = [];
+        for (var i=0; i<this.osize; ++i) {
+          ret.push(new_stat);
+        }
+        return ret;
+      } else if (gtype === "SWAP") {
+        // TODO
       } else if (gtype === "Measure") {
         var nw_id = input[0].id;
         var to_measure = [];
@@ -966,21 +995,21 @@ function init() {
             category: "Qgate",
             isize: 2,
             osize: 2,
-            gtype: "C_U",
+            gtype: "CNOT",
             u: [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]], [[0,0],[0,0],[1,0],[0,0]]]
-          },
-          {
-            key: "C_U_",
-            text: "C_U",
-            category: "Qgate",
-            isize: 2,
-            osize: 2,
-            gtype: "C_U",
-            u: []
           },
           {
             key: "SWAP_",
             text: "SWAP",
+            category: "Qgate",
+            isize: 2,
+            osize: 2,
+            gtype: "SWAP",
+            u: []
+          },
+          {
+            key: "C_U_",
+            text: "C_U",
             category: "Qgate",
             isize: 2,
             osize: 2,
@@ -1027,7 +1056,6 @@ function refresh() {
 }
 
 function run() {
-  Qcnt = {};
   var config = $("#Run_config");
   var text = $("#Run_text");
   text.html("");

@@ -1,5 +1,5 @@
 factoring_to_order_finding = function(input) {
-    var N = 7 * 11;
+    var N = input.n;
     var output = {};
     // check if N is even
     if ((N & 1) == 0) {
@@ -77,8 +77,8 @@ factoring_to_order_finding = function(input) {
     if (gcd(N, x) > 1) {
         // lucky strike
         output.success = true;
-        output.a = 2;
-        output.b = N/2;
+        output.a = gcd(N, x);
+        output.b = N/gcd(N, x);
         return output;
     }
     // then Quantum circuit is used
