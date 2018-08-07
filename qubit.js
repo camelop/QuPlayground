@@ -111,7 +111,6 @@ function Qgate() {
 				}
 				this.u.push(nw);
 			}
-			console.log(a,b)
 			for(var i=0; i<a.u.length; ++i) {
 				var row_i = a.u[i];
 				for (var j=0; j<row_i.length; ++j) {
@@ -238,22 +237,23 @@ function perform(qgate, qstat, loc) {
 
 function measure(qstat, dim) {
 	show = JSON.stringify;
+	console.log(qstat, dim)
 	// console.log("measure, "+show(qstat)+", "+show(dim))
 	// init result
 	var old_loc = [];
 	var new_loc = [];
 	var result = [];
-	for(var i in dim) {
-		old_loc[i] = (1<<dim[i]);
-		new_loc[i] = (1<<i);
+	for(var i=0; i<dim.length; ++i) {
+		old_loc[i] = (1<<(qstat.qsize - dim[i] - 1));
+		//old_loc[i] = (1<<dim[i]);
+		new_loc.push(1<<i);
 	}
 	for(var i=0; i<(1<<dim.length); ++i) result.push(0);
-	// console.log("qstat: ", qstat)
 	var total = 0;
-	for (var i in qstat.state) {
+	for (var i=0; i<qstat.state.length; ++i) {
 		var index = 0;
-		for(var j in dim) {
-			if (i & old_loc[j] > 0) {
+		for(var j=0; j<dim.length; ++j) {
+			if ((parseInt(i) & old_loc[j]) > 0) {
 				index += new_loc[j];
 			}
 		}
@@ -263,8 +263,7 @@ function measure(qstat, dim) {
 
 	var roll = Math.random();
 	var cnt = 0.0;
-	// console.log("result: ", result);
-	for (var i in result) {
+	for (var i=0; i<result.length; ++i) {
 		var delta =  result[i]/total;
 		if (roll >= cnt && roll <= cnt + delta) {
 			roll = i;
@@ -275,19 +274,19 @@ function measure(qstat, dim) {
 
 	var ret = []
 	for(var i in dim) {
-		if ((roll & new_loc[i]) == 0) {
+		if ((parseInt(roll) & new_loc[parseInt(i)]) == 0) {
 			ret.push(0);
 		} else {
 			ret.push(1);
 		}
 	}
 	// then qubit collapse
-	var v = Math.sqrt(total / result[roll]);
+	var v = Math.sqrt(total / result[parseInt(roll)]);
 	for (var i in qstat.state) {
 		var index = 0;
 		for(var j in dim) {
-			if (i & old_loc[j] > 0) {
-				index += new_loc[j];
+			if ((parseInt(i) & old_loc[parseInt(j)] )> 0) {
+				index += new_loc[parseInt(j)];
 			}
 		}
 		if (index != roll) {
@@ -342,7 +341,14 @@ function Qtest() {
 	perform(H, s, 1);
 	$(s.print())
 	*/
-
+	q0 = new Qubit(0);
+	q1 = new Qubit(1);
+	q2 = new Qubit(0);
+	q2 = perform(H, q2);
+	combine = new Qstat(new Qstat(q0, q1), q2);
+	$(measure(combine,[0]))
+	$(measure(combine,[1]))
+	$(measure(combine,[2]))
 }
 
 // Qtest();

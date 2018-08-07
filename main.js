@@ -127,47 +127,75 @@ function Stage(node) {
     output = this.handle.run(input);
     if ((typeof(output)) == "undefined") output = input;
     if ((typeof(input)) == "undefined") input = {};
-    if ((typeof(input.qinfo)) == "undefined") input.qinfo = [];
+    if ((typeof(input.qinfo)) == "undefined") input.qinfo = null;
     if ((typeof(output)) == "undefined") output = {};
-    var qinfo = [];
-    // split qinfo for operators
-    var cur = 0;
+    // calc qinfo
+    var qinfo = input.qinfo;
+    // first handle add qubit
+    var inc_qubit = false;
     for (var i in this.operator) {
-      var nw = this.operator[i];
-      // prepare input
-      var cnt = nw.isize;
-      var ii = [];
-      while (cnt--) {
-        ii.push(input.qinfo[cur]);
-        ++cur;
-      }
-      var oo;
-      if (nw.fromJSBB) {
-        var oo = nw.run(ii, input);
-      } else {
-        var oo = nw.run(ii);
-      }
-      if (nw.toJSBB) {
-        //unpack json
-        for (var j in oo) {
-          if (oo[j] != "qinfo") {
-            if (j in output) {
-              output[j].push(oo[j]);
-            } else 
-            output[j] = [oo[j]];
-          }
+      if (this.operator[i].name == "|0>") {
+        inc_qubit = true;
+        if (qinfo == null) {
+          qinfo = new Qubit(0);
+        } else {
+          qinfo = new Qstat(qinfo, new Qubit(0));
         }
-        oo = oo["qinfo"];
-      }
-      for (var j in oo) {
-        if (j > nw.osize) break; // cut off
-        qinfo.push(oo[j]);
+      } else if (this.operator[i].name == "|1>") {
+        inc_qubit = true;
+        if (qinfo == null) {
+          qinfo = new Qubit(1);
+        } else {
+          qinfo = new Qstat(qinfo, new Qubit(1));
+        }
       }
     }
-    while ((typeof(input.qinfo)) != "undefined" && cur < input.qinfo.length) {
-      qinfo.push(input.qinfo[cur]);
-      ++cur;
+    if (inc_qubit) {
+      output.qinfo = qinfo;
+      return output;
     }
+    // then handle measure
+    for (var i in this.operator) {
+      if (this.operator[i].name == "Measure") {
+        var to_measure = [];
+        for (var j=0; j<this.operator[i].isize; ++j) {
+          to_measure.push(parseInt(i)+parseInt(j));
+        }
+        console.log("wanna measure ",to_measure);
+        var result = measure(qinfo, to_measure); //ganranteed same sys
+        if ("result" in output) {
+          output.result.push(result);
+        } else {
+          output.result = [result];
+        }
+      }
+    }
+    // then all tensor up
+    var tensorI = function(g, index) {
+      if (index == 0) return g;
+      var i=0;
+      if (g == null) {i=1;g = I;}
+      for (; i<index; ++i) g = new Qgate(g, I);
+      return g;
+    }
+    var g = null;
+    for (var i in this.operator) {
+      if (this.operator[i].name == "|0>" || this.operator[i].name == "|1>") {
+        throw "Please add in qubit in first step.";
+      }
+      if (this.operator[i].name == "Measure") {
+        g = tensorI(g, this.operator[i].isize);
+      } else {
+        if (g == null) {
+          g = this.operator[i].generate(input);
+        } else {
+          g = new Qgate(g, this.operator[i].generate(input));
+        }
+      }
+    }
+    if (g!=null && qinfo.qsize < g.isize) throw "More gate than qubit.";
+    if (g!=null) g = tensorI(g, qinfo.qsize - g.isize);
+    if (g!=null) qinfo = perform(g, qinfo);
     output.qinfo = qinfo;
     return output;
   }
@@ -182,12 +210,12 @@ function Operator(node) {
   this.fromJSBB = node.data.fromJSBB;
   this.toJSBB = node.data.toJSBB;
   this.run = function (input, all) {
-    console.log("Running "+this.name)
     if (this.category == "JSBB") {
       var code = this.node.data.code;
       var entry = eval(this.node.data.code);
       return entry(input);
     } else if (this.category == "Qgate") {
+      throw "Duplicated!";
       var gtype = this.node.data.gtype;
       if (gtype === "|0>") {
         var ret = [];
@@ -229,7 +257,7 @@ function Operator(node) {
           new_stat = new Qstat(new_stat, input[i]);
         }
         var g = new Qgate(this.isize, this.osize, u);
-        Qcnt[new_stat.id] = this.iszie;
+        Qcnt[new_stat.id] = this.isize;
         if (new_stat.qsize != this.isize) {
           new_stat = perform(g, new_stat, 0);
         } else {
@@ -275,18 +303,7 @@ function Operator(node) {
         }
         return ret;
       } else if (gtype === "Measure") {
-        var nw_id = input[0].id;
-        var to_measure = [];
-        var ret_qinfo = [];
-        for (var i=0; i<this.isize; ++i) {
-          if (input[i].id != nw_id) throw "Measure across system detected, plz split";
-          if (!(input[i].id in Qcnt)) {Qcnt[input[i].id] = 0; }
-          to_measure.push(Qcnt[input[i].id]);
-          ++Qcnt[input[i].id];
-          ret_qinfo.push(new Qstat(input[i]));
-        }
-        var result = measure(input[0], to_measure); //ganranteed same sys
-        return {"result": result, "qinfo": ret_qinfo};
+        throw "Measure should not run.";
       }
       alert("Not implement "+this.name)
       if (this.toJSBB) {
@@ -294,6 +311,63 @@ function Operator(node) {
       } else return input;
     } else {
       throw "Undefined category "+this.category;
+    }
+  }
+  this.generate = function (input) {
+    //console.log("Generating "+this.name);
+    var gtype = this.name;
+    if (this.category != "Qgate") throw "JSBB cannot generate!";
+    if (gtype === "|0>") {
+      throw "|0> cannot generate!";
+    } else if (gtype === "|1>") {
+      throw "|1> cannot generate!";
+    } else if (gtype === "Identity") {
+      var ret = I;
+      while(ret.isize < this.isize) ret = new Qgate(ret, I);
+      return ret;
+    } else if (gtype === "PauliX") {
+      var ret = X;
+      while(ret.isize < this.isize) ret = new Qgate(ret, X);
+      return ret;
+    } else if (gtype === "PauliZ") {
+      var ret = Z;
+      while(ret.isize < this.isize) ret = new Qgate(ret, Z);
+      return ret;
+    } else if (gtype === "PauliY") {
+      var ret = Y;
+      while(ret.isize < this.isize) ret = new Qgate(ret, Y);
+      return ret;
+    } else if (gtype === "Hadamard") {
+      var ret = H;
+      while(ret.isize < this.isize) ret = new Qgate(ret, H);
+      return ret;
+    } else if (gtype === "Phase") {
+      var ret = S;
+      while(ret.isize < this.isize) ret = new Qgate(ret, S);
+      return ret;
+    } else if (gtype === "PiD8") {
+      var ret = T;
+      while(ret.isize < this.isize) ret = new Qgate(ret, T);
+      return ret;
+    } else if (gtype === "CNOT") {
+      if (this.isize != 2) throw "CNOT isize must be 2";
+      return CNOT;
+    } else if (gtype === "C_U") {
+      var u = input.u;
+      return new Qgate(this.isize, this.osize, u);
+    } else if (gtype === "SWAP") {
+      var _from = input.from;
+      var _to = input.to;
+      return SWAP(this.isize, _from, _to);
+    } else if (gtype === "Measure") {
+      var ret = I;
+      while(ret.isize < this.isize) ret = new Qgate(ret, I);
+      return ret;
+    } else {
+      if ("text" in this.data)
+        alert("Not implement "+this.name+":"+this.data.text);
+      else
+        alert("Not implement "+this.name);
     }
   }
 
@@ -308,6 +382,13 @@ function openRunModal(e, src) {
     myDiagram.nodes.each(function (nw) {
       nodes.push(nw);
     });
+    nodes.sort(function(a,b){
+      if (a.location.y < b.location.y) return -1;
+      if (a.location.y > b.location.y) return 1;
+      if (a.location.x < b.location.x) return -1;
+      if (a.location.x > b.location.x) return 1;
+      return 0;
+    })
     for (i in nodes) {
       var cur = nodes[i];
       if (cur.data.category === "Program") {
@@ -1020,7 +1101,7 @@ function init() {
             key: "baseM_",
             category: "Qgate",
             isize: 1,
-            osize: 0,
+            osize: 1,
             gtype: "Measure",
             toJSBB: true
           },
@@ -1058,7 +1139,7 @@ function init() {
   relayoutSteps();
 
   // for test
-   openRunModal();
+  // openRunModal();
 } // end init
 
 // Show the diagram's model in JSON format
