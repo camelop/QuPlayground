@@ -451,8 +451,8 @@ function updateCrossStepLinks() {
     if (group[l].location.y != group[r].location.y) continue;
     g_l = group[l];
     g_r = group[r];
-    l_ptr = 0;
-    r_ptr = 0;
+    l_ptr = 0; l_cnt = 0;
+    r_ptr = 0; r_cnt = 0;
     while (l_ptr < group_v[g_l.key].length && group_v[g_l.key][l_ptr].data.category == "JSBB") {
       ++l_ptr;
     }
@@ -462,46 +462,66 @@ function updateCrossStepLinks() {
     if (l_ptr < group_v[g_l.key].length) l_cnt = group_v[g_l.key][l_ptr].data.osize;
     if (r_ptr < group_v[g_r.key].length) r_cnt = group_v[g_r.key][r_ptr].data.isize;
     while (l_ptr < group_v[g_l.key].length && r_ptr < group_v[g_r.key].length) {
-      nw = {}
-      nw.from = group_v[g_l.key][l_ptr].key;
-      nw.to = group_v[g_r.key][r_ptr].key;
-      linkData.push(nw);
-      l_cnt--;
-      r_cnt--;
-      while (l_cnt == 0) {
-        l_ptr++;
-        if (l_ptr >= group_v[g_l.key].length) break;
-        l_cnt = group_v[g_l.key][l_ptr].data.osize;
-      }
-      while (r_cnt == 0) {
-        r_ptr++;
-        if (r_ptr >= group_v[g_r.key].length) break;
-        r_cnt = group_v[g_r.key][r_ptr].data.isize;
-      }
-    }
-    while (l_cnt > 0 && l_ptr < group_v[g_l.key].length) {
       while (l_ptr < group_v[g_l.key].length && l_cnt == 0) {
         l_ptr++;
         if (l_ptr >= group_v[g_l.key].length) break;
         l_cnt = group_v[g_l.key][l_ptr].data.osize;
       }
+      if (l_ptr >= group_v[g_l.key].length) break;
+      while (r_ptr < group_v[g_r.key].length && r_cnt == 0) {
+        r_ptr++;
+        if (r_ptr >= group_v[g_r.key].length) break;
+        r_cnt = group_v[g_r.key][r_ptr].data.isize;
+      }
+      if (r_ptr >= group_v[g_r.key].length) break;
+      while (l_cnt > 0 && r_cnt > 0) {
+        nw = {}
+        nw.from = group_v[g_l.key][l_ptr].key;
+        nw.to = group_v[g_r.key][r_ptr].key;
+        linkData.push(nw);
+        l_cnt--;
+        r_cnt--;
+      }
+    }
+    console.log(l_cnt, l_ptr, group_v[g_l.key].length,r_cnt,  r_ptr, group_v[g_r.key].length)
+    while (l_cnt > 0) {      
       bin.push(group_v[g_l.key][l_ptr].key)
       l_cnt--;
     }
-    while (r_ptr < group_v[g_r.key].length && bin_f < bin.length) {
+    while (l_ptr < group_v[g_l.key].length) {
+      while (l_ptr < group_v[g_l.key].length && l_cnt == 0) {
+        l_ptr++;
+        if (l_ptr >= group_v[g_l.key].length) break;
+        l_cnt = group_v[g_l.key][l_ptr].data.osize;
+      }
+      if (l_ptr >= group_v[g_l.key].length) break;
+      bin.push(group_v[g_l.key][l_ptr].key)
+      l_cnt--;
+    }
+    while (r_cnt > 0  && bin_f < bin.length) {
       nw = {}
       nw.from = bin[bin_f];
       bin_f++;
       nw.to = group_v[g_r.key][r_ptr].key;
       linkData.push(nw);
       r_cnt--;
+    }
+    while (r_ptr < group_v[g_r.key].length && bin_f < bin.length) {
       while (r_cnt == 0) {
         r_ptr++;
         if (r_ptr >= group_v[g_r.key].length) break;
         r_cnt = group_v[g_r.key][r_ptr].data.isize;
       }
+      if (r_ptr >= group_v[g_r.key].length) break;
+      nw = {}
+      nw.from = bin[bin_f];
+      bin_f++;
+      nw.to = group_v[g_r.key][r_ptr].key;
+      linkData.push(nw);
+      r_cnt--;
     }
 
+    console.log(l, bin_f, bin)
     // sp JSBB
     for (i = 0; i < group_v[g_l.key].length; ++i) {
       ll = group_v[g_l.key][i];
@@ -611,8 +631,16 @@ function init() {
 
   function QgateColorConverter(nodeData, elt) {
     if (nodeData.gtype == "Measure") return "green";
+    if (nodeData.gtype == "C_U") return "purple"; 
+    if (nodeData.gtype == "Hadamard") return "DodgerBlue"; 
     return "blue";
   }
+
+  function QgateNameManager(nodeData, elt) {
+    if (typeof(nodeData.text) != "undefined") return nodeData.text;
+    return nodeData.gtype;
+  }
+
 
   myDiagram.nodeTemplateMap.add("Qgate", // represent a JS program basic block
     $(go.Node, "Auto",
@@ -630,7 +658,7 @@ function init() {
           cursor: "cell",
           stroke: "white"
         },
-        new go.Binding("text", "gtype").makeTwoWay()), {
+        new go.Binding("text", "", QgateNameManager).makeTwoWay()), {
         dragComputation: function (part, pt, gridpt) {
           return pt;
         },
@@ -897,6 +925,13 @@ function init() {
             code: "identity = function(x) {return x;}"
           },
           {
+            key: "baseI_",
+            category: "Qgate",
+            isize: 1,
+            osize: 1,
+            gtype: "Identity"
+          },
+          {
             key: "base0_",
             category: "Qgate",
             isize: 0,
@@ -926,11 +961,31 @@ function init() {
             toJSBB: true
           },
           {
-            key: "CNOT", 
+            key: "CNOT_", 
+            text: "CNOT",
             category: "Qgate",
             isize: 2,
-            osize: 1,
-            gtype: "CNOT"
+            osize: 2,
+            gtype: "C_U",
+            u: [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]], [[0,0],[0,0],[1,0],[0,0]]]
+          },
+          {
+            key: "C_U_",
+            text: "C_U",
+            category: "Qgate",
+            isize: 2,
+            osize: 2,
+            gtype: "C_U",
+            u: []
+          },
+          {
+            key: "SWAP_",
+            text: "SWAP",
+            category: "Qgate",
+            isize: 2,
+            osize: 2,
+            gtype: "C_U",
+            u: []
           }
         ])
       });

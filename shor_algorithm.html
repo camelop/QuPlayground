@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>QuPlayground - Shor algorithm</title>
+	<!--Gojs CDN-->
+	<script src="https://cdn.bootcss.com/gojs/1.8.20/go.js"></script>
+	<!--
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.25/go-debug.js"></script>
+		-->
+	<!--Bootstrap CDN-->
+	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-grid.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-reboot.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.bundle.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.js"></script>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+	
+	
+	<link href="json_syntax.css" rel="stylesheet">
+	<script src="json_syntax.js"></script>
+	<script src="qubit.js"></script>
+	<script id="code" src="main.js"></script>
+
+	
+</head>
+
+<body onload="init()">
+
+	<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+		<h3 class="my-0 mr-md-auto font-weight-normal">
+			<b>Qu</b>Playground</h3>
+		<nav class="my-2 my-md-0 mr-md-3">
+			<a class="p-2 text-dark" href="#">Developing</a>
+		</nav>
+		<a class="btn btn-outline-primary" href="https://github.com/camelop/QuPlayground">Github page</a>
+	</div>
+	<div id="main" class="container">
+		<div style="width: 100%; display: flex; justify-content: space-between">
+			<div id="myPaletteDiv" style="width: 150px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
+			<div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
+		</div>
+
+		<button type="button" class="btn btn-primary" style="width:24%" onclick="save()">
+			Save
+			<i class="fa fa-download fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-secondary" style="width:24%" onclick="load()">
+			Load
+			<i class="fa fa-upload fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-success" style="width:24%" onclick="refresh()">
+			Refresh
+			<i class="fa fa-refresh fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-danger" style="width:24%" onclick="openRunModal()">
+			Run
+			<i class="fa fa-play-circle fa-1.5x"></i>
+		</button>
+		<br>
+		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":"P1", "text":"Shor Algorithm", "isGroup":true, "category":"Program", "loc":"0 0"},
+{"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 481.512158203125"},
+{"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
+{"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794"},
+{"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 101.52284749830794"},
+{"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795", "group":"P1S1"},
+{"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
+{"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
+{"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
+{"key":"P1S2222", "text":"Step5", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_32", "category":"JSBB", "text":"show", "isize":0, "osize":0, "code":"identity = function(x) {return x[\"result\"];}", "loc":"493 53.52284749830794", "group":"P1S2222"},
+{"key":"base0_3", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 389.52284749830795", "group":"P1S1"},
+{"key":"base0_4", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 341.52284749830795", "group":"P1S1"},
+{"key":"base0_5", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 293.52284749830795", "group":"P1S1"},
+{"key":"base0_6", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 245.52284749830795", "group":"P1S1"},
+{"key":"base0_7", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 197.52284749830795", "group":"P1S1"},
+{"key":"e2", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 245.52284749830795"},
+{"key":"e3", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 197.52284749830795"},
+{"key":"e4", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 149.52284749830795"},
+{"key":"baseI_", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"237 101.52284749830794", "group":"P1S22"},
+{"key":"baseI_2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"237 197.52284749830795", "group":"P1S22"},
+{"key":"baseI_3", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"237 149.52284749830795", "group":"P1S22"},
+{"key":"C_U_", "text":"C_U", "category":"Qgate", "isize":5, "osize":5, "gtype":"C_U", "u":[], "loc":"237 245.52284749830795", "group":"P1S22", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_4", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"365 101.52284749830794", "group":"P1S222"},
+{"key":"baseI_42", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"365 149.52284749830795", "group":"P1S222"},
+{"key":"SWAP_", "text":"SWAP", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"365 197.52284749830795", "group":"P1S222", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_7", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"493 101.52284749830794", "group":"P1S2222"},
+{"key":"baseI_72", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"493 197.52284749830795", "group":"P1S2222"},
+{"key":"baseI_73", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"493 149.52284749830795", "group":"P1S2222"},
+{"key":"C_U_2", "text":"C_U", "category":"Qgate", "isize":5, "osize":5, "gtype":"C_U", "u":[], "loc":"493 245.52284749830795", "group":"P1S2222", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S2223", "text":"Step6", "isGroup":true, "group":"P1", "category":"Stage", "loc":"601 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_33", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"621 53.52284749830794", "group":"P1S2223"},
+{"key":"baseI_43", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"621 101.52284749830794", "group":"P1S2223"},
+{"key":"SWAP_2", "text":"SWAP", "category":"Qgate", "isize":3, "osize":3, "gtype":"C_U", "u":[], "loc":"621 149.52284749830795", "group":"P1S2223", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S22232", "text":"Step7", "isGroup":true, "group":"P1", "category":"Stage", "loc":"729 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_332", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"749 53.52284749830794", "group":"P1S22232"},
+{"key":"baseI_432", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"749 101.52284749830794", "group":"P1S22232"},
+{"key":"baseI_722", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"749 149.52284749830795", "group":"P1S22232"},
+{"key":"baseI_7222", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"749 197.52284749830795", "group":"P1S22232"},
+{"key":"C_U_22", "text":"C_U", "category":"Qgate", "isize":5, "osize":5, "gtype":"C_U", "u":[], "loc":"749 245.52284749830795", "group":"P1S22232", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S22233", "text":"Step8", "isGroup":true, "group":"P1", "category":"Stage", "loc":"857 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"877 53.52284749830794", "group":"P1S22233"},
+{"key":"SWAP_22", "text":"SWAP", "category":"Qgate", "isize":4, "osize":4, "gtype":"C_U", "u":[], "loc":"877 101.52284749830794", "group":"P1S22233", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S222322", "text":"Step9", "isGroup":true, "group":"P1", "category":"Stage", "loc":"985 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3322", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1005 53.52284749830794", "group":"P1S222322"},
+{"key":"baseI_4322", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1005 101.52284749830794", "group":"P1S222322"},
+{"key":"baseI_7223", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1005 149.52284749830795", "group":"P1S222322"},
+{"key":"baseI_72222", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1005 197.52284749830795", "group":"P1S222322"},
+{"key":"C_U_222", "text":"C_U", "category":"Qgate", "isize":5, "osize":5, "gtype":"C_U", "u":[], "loc":"1005 245.52284749830795", "group":"P1S222322", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S222332", "text":"Step10", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1113 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1133 53.52284749830794", "group":"P1S222332"},
+{"key":"SWAP_222", "text":"SWAP", "category":"Qgate", "isize":4, "osize":4, "gtype":"C_U", "u":[], "loc":"1133 101.52284749830794", "group":"P1S222332", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S2223322", "text":"Step11", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1241 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_33322", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1261 53.52284749830794", "group":"P1S2223322"},
+{"key":"P1S22233222", "text":"Step17", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2009 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2029 53.52284749830794", "group":"P1S22233222"},
+{"key":"P1S22233223", "text":"Step15", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1753 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333223", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1773 53.52284749830794", "group":"P1S22233223"},
+{"key":"P1S22233224", "text":"Step14", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1625 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333224", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1645 53.52284749830794", "group":"P1S22233224"},
+{"key":"P1S22233225", "text":"Step13", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1497 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333225", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1517 53.52284749830794", "group":"P1S22233225"},
+{"key":"P1S22233226", "text":"Step12", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1369 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333226", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1389 53.52284749830794", "group":"P1S22233226"},
+{"key":"baseH_", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"1261 101.52284749830794", "group":"P1S2223322", "fromJSBB":false, "toJSBB":false},
+{"key":"base1_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|1>", "loc":"20 437.52284749830795", "group":"P1S1"},
+{"key":"C_U_3", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"1389 101.52284749830794", "group":"P1S22233226", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_5", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1261 149.52284749830795", "group":"P1S2223322"},
+{"key":"baseI_6", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1517 101.52284749830794", "group":"P1S22233225"},
+{"key":"baseH_2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"1517 149.52284749830795", "group":"P1S22233225"},
+{"key":"baseI_8", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1645 101.52284749830794", "group":"P1S22233224"},
+{"key":"C_U_4", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"1645 149.52284749830795", "group":"P1S22233224", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_9", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1261 197.52284749830795", "group":"P1S2223322"},
+{"key":"baseI_10", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1389 149.52284749830795", "group":"P1S22233226"},
+{"key":"baseI_11", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1517 197.52284749830795", "group":"P1S22233225"},
+{"key":"SWAP_3", "text":"SWAP", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"1773 101.52284749830794", "group":"P1S22233223", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S222332222", "text":"Step22", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2649 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2669 53.52284749830794", "group":"P1S222332222"},
+{"key":"P1S222332223", "text":"Step21", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2521 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332223", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2541 53.52284749830794", "group":"P1S222332223"},
+{"key":"P1S222332224", "text":"Step20", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2393 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332224", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2413 53.52284749830794", "group":"P1S222332224"},
+{"key":"P1S222332225", "text":"Step19", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2265 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332225", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2285 53.52284749830794", "group":"P1S222332225"},
+{"key":"P1S222332226", "text":"Step18", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2137 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332226", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2157 53.52284749830794", "group":"P1S222332226"},
+{"key":"P1S222332227", "text":"Step16", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1881 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332227", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1901 53.52284749830794", "group":"P1S222332227"},
+{"key":"baseI_12", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1901 101.52284749830794", "group":"P1S222332227"},
+{"key":"C_U_5", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"1901 149.52284749830795", "group":"P1S222332227", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_13", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1773 149.52284749830795", "group":"P1S22233223"},
+{"key":"baseI_14", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2029 101.52284749830794", "group":"P1S22233222"},
+{"key":"baseI_15", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2029 149.52284749830795", "group":"P1S22233222"},
+{"key":"baseH_3", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"2029 197.52284749830795", "group":"P1S22233222"},
+{"key":"baseI_16", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2157 101.52284749830794", "group":"P1S222332226"},
+{"key":"baseI_17", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2157 149.52284749830795", "group":"P1S222332226"},
+{"key":"C_U_6", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"2157 197.52284749830795", "group":"P1S222332226", "fromJSBB":true, "toJSBB":false},
+{"key":"SWAP_4", "text":"SWAP", "category":"Qgate", "isize":3, "osize":3, "gtype":"C_U", "u":[], "loc":"2285 101.52284749830794", "group":"P1S222332225", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_18", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2413 101.52284749830794", "group":"P1S222332224"},
+{"key":"baseI_19", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2413 149.52284749830795", "group":"P1S222332224"},
+{"key":"C_U_7", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"2413 197.52284749830795", "group":"P1S222332224", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_20", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2285 149.52284749830795", "group":"P1S222332225"},
+{"key":"P1S2223322223", "text":"Step23", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2777 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_33322223", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2797 53.52284749830794", "group":"P1S2223322223"},
+{"key":"SWAP_42", "text":"SWAP", "category":"Qgate", "isize":3, "osize":3, "gtype":"C_U", "u":[], "loc":"2541 101.52284749830794", "group":"P1S222332223", "fromJSBB":true, "toJSBB":false},
+{"key":"baseI_21", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2669 101.52284749830794", "group":"P1S222332222"},
+{"key":"baseI_22", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2669 149.52284749830795", "group":"P1S222332222"},
+{"key":"C_U_8", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"2669 197.52284749830795", "group":"P1S222332222", "fromJSBB":false, "toJSBB":false},
+{"key":"baseI_23", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2541 149.52284749830795", "group":"P1S222332223"},
+{"key":"P1S22233222232", "text":"Step25", "isGroup":true, "group":"P1", "category":"Stage", "loc":"3033 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333222232", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"3053 53.52284749830794", "group":"P1S22233222232"},
+{"key":"P1S22233222233", "text":"Step24", "isGroup":true, "group":"P1", "category":"Stage", "loc":"2905 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_333222233", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"2925 53.52284749830794", "group":"P1S22233222233"},
+{"key":"baseI_24", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2797 101.52284749830794", "group":"P1S2223322223"},
+{"key":"baseI_25", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2797 149.52284749830795", "group":"P1S2223322223"},
+{"key":"baseI_26", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"2797 197.52284749830795", "group":"P1S2223322223"},
+{"key":"baseH_4", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"2797 245.52284749830795", "group":"P1S2223322223"},
+{"key":"SWAP_5", "text":"SWAP", "category":"Qgate", "isize":4, "osize":4, "gtype":"C_U", "u":[], "loc":"2925 101.52284749830794", "group":"P1S22233222233", "fromJSBB":false, "toJSBB":false},
+{"key":"baseM_", "category":"Qgate", "isize":4, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"3053 101.52284749830794", "group":"P1S22233222232", "fromJSBB":false},
+{"key":"P1S222332222322", "text":"Step26", "isGroup":true, "group":"P1", "category":"Stage", "loc":"3161 23.522847498307936", "size":"126.38720703125 481.512158203125"},
+{"key":"baseJS_3332222322", "category":"JSBB", "text":"display", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"3181 53.52284749830794", "group":"P1S222332222322"}
+ ],
+  "linkDataArray": [ 
+{"from":"b", "to":"e"},
+{"from":"base0_", "to":"e4"},
+{"from":"base0_7", "to":"e3"},
+{"from":"base0_6", "to":"e2"},
+{"from":"e", "to":"baseI_"},
+{"from":"e4", "to":"baseI_3"},
+{"from":"e3", "to":"baseI_2"},
+{"from":"e2", "to":"C_U_"},
+{"from":"base0_5", "to":"C_U_"},
+{"from":"base0_4", "to":"C_U_"},
+{"from":"base0_3", "to":"C_U_"},
+{"from":"base1_", "to":"C_U_"},
+{"from":"baseJS_", "to":"C_U_"},
+{"from":"baseI_", "to":"baseI_4"},
+{"from":"baseI_3", "to":"baseI_42"},
+{"from":"baseI_2", "to":"SWAP_"},
+{"from":"C_U_", "to":"SWAP_"},
+{"from":"baseJS_2", "to":"SWAP_"},
+{"from":"baseI_4", "to":"baseI_7"},
+{"from":"baseI_42", "to":"baseI_73"},
+{"from":"SWAP_", "to":"baseI_72"},
+{"from":"SWAP_", "to":"C_U_2"},
+{"from":"C_U_", "to":"C_U_2"},
+{"from":"C_U_", "to":"C_U_2"},
+{"from":"C_U_", "to":"C_U_2"},
+{"from":"C_U_", "to":"C_U_2"},
+{"from":"baseJS_3", "to":"C_U_2"},
+{"from":"baseI_7", "to":"baseI_43"},
+{"from":"baseI_73", "to":"SWAP_2"},
+{"from":"baseI_72", "to":"SWAP_2"},
+{"from":"C_U_2", "to":"SWAP_2"},
+{"from":"baseJS_32", "to":"SWAP_2"},
+{"from":"baseI_43", "to":"baseI_432"},
+{"from":"SWAP_2", "to":"baseI_722"},
+{"from":"SWAP_2", "to":"baseI_7222"},
+{"from":"SWAP_2", "to":"C_U_22"},
+{"from":"C_U_2", "to":"C_U_22"},
+{"from":"C_U_2", "to":"C_U_22"},
+{"from":"C_U_2", "to":"C_U_22"},
+{"from":"C_U_2", "to":"C_U_22"},
+{"from":"baseJS_33", "to":"C_U_22"},
+{"from":"baseI_432", "to":"SWAP_22"},
+{"from":"baseI_722", "to":"SWAP_22"},
+{"from":"baseI_7222", "to":"SWAP_22"},
+{"from":"C_U_22", "to":"SWAP_22"},
+{"from":"baseJS_332", "to":"SWAP_22"},
+{"from":"SWAP_22", "to":"baseI_4322"},
+{"from":"SWAP_22", "to":"baseI_7223"},
+{"from":"SWAP_22", "to":"baseI_72222"},
+{"from":"SWAP_22", "to":"C_U_222"},
+{"from":"C_U_22", "to":"C_U_222"},
+{"from":"C_U_22", "to":"C_U_222"},
+{"from":"C_U_22", "to":"C_U_222"},
+{"from":"C_U_22", "to":"C_U_222"},
+{"from":"baseJS_333", "to":"C_U_222"},
+{"from":"baseI_4322", "to":"SWAP_222"},
+{"from":"baseI_7223", "to":"SWAP_222"},
+{"from":"baseI_72222", "to":"SWAP_222"},
+{"from":"C_U_222", "to":"SWAP_222"},
+{"from":"baseJS_3322", "to":"SWAP_222"},
+{"from":"SWAP_222", "to":"baseH_"},
+{"from":"SWAP_222", "to":"baseI_5"},
+{"from":"SWAP_222", "to":"baseI_9"},
+{"from":"baseH_", "to":"C_U_3"},
+{"from":"baseI_5", "to":"C_U_3"},
+{"from":"baseI_9", "to":"baseI_10"},
+{"from":"baseJS_33322", "to":"C_U_3"},
+{"from":"C_U_3", "to":"baseI_6"},
+{"from":"C_U_3", "to":"baseH_2"},
+{"from":"baseI_10", "to":"baseI_11"},
+{"from":"baseI_6", "to":"baseI_8"},
+{"from":"baseH_2", "to":"C_U_4"},
+{"from":"baseI_11", "to":"C_U_4"},
+{"from":"baseJS_333225", "to":"C_U_4"},
+{"from":"baseI_8", "to":"SWAP_3"},
+{"from":"C_U_4", "to":"SWAP_3"},
+{"from":"C_U_4", "to":"baseI_13"},
+{"from":"baseJS_333224", "to":"SWAP_3"},
+{"from":"SWAP_3", "to":"baseI_12"},
+{"from":"SWAP_3", "to":"C_U_5"},
+{"from":"baseI_13", "to":"C_U_5"},
+{"from":"baseJS_333223", "to":"C_U_5"},
+{"from":"baseI_12", "to":"baseI_14"},
+{"from":"C_U_5", "to":"baseI_15"},
+{"from":"C_U_5", "to":"baseH_3"},
+{"from":"baseI_14", "to":"baseI_16"},
+{"from":"baseI_15", "to":"baseI_17"},
+{"from":"baseH_3", "to":"C_U_6"},
+{"from":"C_U_222", "to":"C_U_6"},
+{"from":"baseJS_333222", "to":"C_U_6"},
+{"from":"baseI_16", "to":"SWAP_4"},
+{"from":"baseI_17", "to":"SWAP_4"},
+{"from":"C_U_6", "to":"SWAP_4"},
+{"from":"C_U_6", "to":"baseI_20"},
+{"from":"baseJS_3332226", "to":"SWAP_4"},
+{"from":"SWAP_4", "to":"baseI_18"},
+{"from":"SWAP_4", "to":"baseI_19"},
+{"from":"SWAP_4", "to":"C_U_7"},
+{"from":"baseI_20", "to":"C_U_7"},
+{"from":"baseJS_3332225", "to":"C_U_7"},
+{"from":"baseI_18", "to":"SWAP_42"},
+{"from":"baseI_19", "to":"SWAP_42"},
+{"from":"C_U_7", "to":"SWAP_42"},
+{"from":"C_U_7", "to":"baseI_23"},
+{"from":"baseJS_3332224", "to":"SWAP_42"},
+{"from":"SWAP_42", "to":"baseI_21"},
+{"from":"SWAP_42", "to":"baseI_22"},
+{"from":"SWAP_42", "to":"C_U_8"},
+{"from":"baseI_23", "to":"C_U_8"},
+{"from":"baseI_21", "to":"baseI_24"},
+{"from":"baseI_22", "to":"baseI_25"},
+{"from":"C_U_8", "to":"baseI_26"},
+{"from":"C_U_8", "to":"baseH_4"},
+{"from":"baseI_24", "to":"SWAP_5"},
+{"from":"baseI_25", "to":"SWAP_5"},
+{"from":"baseI_26", "to":"SWAP_5"},
+{"from":"baseH_4", "to":"SWAP_5"},
+{"from":"SWAP_5", "to":"baseM_"},
+{"from":"SWAP_5", "to":"baseM_"},
+{"from":"SWAP_5", "to":"baseM_"},
+{"from":"SWAP_5", "to":"baseM_"},
+{"from":"baseM_", "to":"baseJS_3332222322"}
+ ]}
+		</textarea>
+	</div>
+	<!-- JSSB -->
+	<div class="modal fade" id="JSBB_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">Settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+
+				<div class="row">
+					<div class="col-1"></div>
+					<div class="col-10">
+						description: <br>
+						<input type="text" placeholder="" id="JSBB_description" stype>
+						<br>
+						code: <br>
+						<textarea id="JSBB_code" style="width: 100%"></textarea>
+					</div>
+					<div class="col-1"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">apply</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+
+	<!-- Qgate -->
+	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">Settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="center-block">
+					<form class="form-horizontal" align="center">
+						<fieldset>
+							<!-- Select Basic -->
+							<div class="controls" align="center">
+								<label class="control-label">gateType</label>
+								<select class="input-xlarge" id="Qgate_gtype">
+									<option>|0></option>
+									<option>|1></option>
+									<option>Identity</option>
+									<option>PauliX</option>
+									<option>PauliZ</option>
+									<option>PauliY</option>
+									<option>Hadamard</option>
+									<option>Phase</option>
+									<option>PiD8</option>
+									<option>CNOT</option>
+									<option>SWAP</option>
+									<option>C_U</option>
+									<option>Measure</option>
+								</select>
+								<br>
+
+							</div>
+							<label class="control-label">&ensp;&ensp;inputSize</label>
+							<input type="number" placeholder="" id="Qgate_isize">
+							<br>
+							<label class="control-label">outputSize</label>
+							<input type="number" placeholder="" id="Qgate_osize">
+							<div class="control-group">
+								<!-- Multiple Checkboxes -->
+								<div class="controls">
+									<!-- Inline Checkboxes -->
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_fromJS"> fromJS
+									</label>
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_toJS"> toJS
+									</label>
+								</div>
+							</div>
+
+						</fieldset>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeQgateModal()" data-dismiss="modal">apply</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+	</div>
+	<!-- Run_modal -->
+	<div class="modal fade bs-example-modal-lg" id="Run_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="gridSystemModalLabel">Run settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-1"></div>
+						<div class="col-10">
+							<textarea id="Run_config" style="width: 100%" rows="5">
+	entry = function(programs) { for(var i in programs) {programs[i].run();}}
+							</textarea>
+							<div class="panel">
+								<div class="panel-body" style="word-break:break-all">
+									<p id="Run_text">
+										gzotpa
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-1"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+					<button type="button" class="btn btn-danger" onclick="run()">GO!</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

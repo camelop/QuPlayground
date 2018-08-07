@@ -17,14 +17,14 @@
 	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.bundle.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.js"></script>
 	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-	
-	
+
+
 	<link href="json_syntax.css" rel="stylesheet">
 	<script src="json_syntax.js"></script>
 	<script src="qubit.js"></script>
 	<script id="code" src="main.js"></script>
 
-	
+
 </head>
 
 <body onload="init()">
@@ -33,186 +33,77 @@
 		<h3 class="my-0 mr-md-auto font-weight-normal">
 			<b>Qu</b>Playground</h3>
 		<nav class="my-2 my-md-0 mr-md-3">
-			<a class="p-2 text-dark" href="#">Developing</a>
+			<a class="p-2 text-dark">Developing</a>
 		</nav>
-		<a class="btn btn-outline-primary" href="#">A button</a>
+		<a class="btn btn-outline-primary" href="https://github.com/camelop/QuPlayground">Github page</a>
 	</div>
-	<div id="main" class="container">
-		<div style="width: 100%; display: flex; justify-content: space-between">
-			<div id="myPaletteDiv" style="width: 150px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
-			<div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
+
+	<section class="jumbotron text-center">
+		<div class="container">
+			<h1 class="jumbotron-heading">
+				<b>Qu</b>Playground</h1>
+			<p class="lead text-muted">A new way to test your ideas about quantum circuit.</p>
+			<p>
+				<a href="bell_test.html" class="btn btn-primary my-2">Try it now!</a>
+				<a href="https://github.com/camelop/QuPlayground/blob/master/README.md" class="btn btn-secondary my-2">See docs</a>
+			</p>
 		</div>
+	</section>
 
-		<button type="button" class="btn btn-primary" style="width:24%" onclick="save()">
-			Save
-			<i class="fa fa-download fa-1.5x"></i>
-		</button>
-		<button type="button" class="btn btn-secondary" style="width:24%" onclick="load()">
-			Load
-			<i class="fa fa-upload fa-1.5x"></i>
-		</button>
-		<button type="button" class="btn btn-success" style="width:24%" onclick="refresh()">
-			Refresh
-			<i class="fa fa-refresh fa-1.5x"></i>
-		</button>
-		<button type="button" class="btn btn-danger" style="width:24%" onclick="openRunModal()">
-			Run
-			<i class="fa fa-play-circle fa-1.5x"></i>
-		</button>
-		<br>
-		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
-{ "class": "go.GraphLinksModel",
-  "nodeDataArray": [ 
-{"key":"P1", "text":"Bell Test", "isGroup":true, "category":"Program", "loc":"0 0"},
-{"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 200"},
-{"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 200"},
-{"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
-{"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794"},
-{"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 101.52284749830794"},
-{"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795", "group":"P1S1"},
-{"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 200"},
-{"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
-{"key":"CNOT", "category":"Qgate", "isize":2, "osize":2, "gtype":"CNOT", "loc":"237 101.52284749830794", "group":"P1S22", "fromJSBB":false, "toJSBB":false},
-{"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 200"},
-{"key":"baseM_", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 101.52284749830794", "group":"P1S222"},
-{"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
-{"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
-{"key":"P1S2222", "text":"Step5", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.38720703125 200"},
-{"key":"baseJS_32", "category":"JSBB", "text":"show", "isize":0, "osize":0, "code":"identity = function(x) {return x[\"result\"];}", "loc":"493 53.52284749830794", "group":"P1S2222"},
-{"key":"baseM_2", "category":"Qgate", "isize":1, "osize":0, "gtype":"Measure", "toJSBB":true, "loc":"365 149.52284749830795", "group":"P1S222"}
- ],
-  "linkDataArray": [ 
-{"from":"b", "to":"e"},
-{"from":"e", "to":"CNOT"},
-{"from":"base0_", "to":"CNOT"},
-{"from":"CNOT", "to":"baseM_"},
-{"from":"CNOT", "to":"baseM_2"},
-{"from":"baseM_", "to":"baseJS_32"},
-{"from":"baseM_2", "to":"baseJS_32"}
- ]}
-		</textarea>
-	</div>
-	<!-- JSSB -->
-	<div class="modal fade" id="JSBB_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="myModalLabel">Settings</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				</div>
+	<div class="album py-5 bg-light">
+		<div class="container">
 
-				<div class="row">
-					<div class="col-1"></div>
-					<div class="col-10">
-						description: <br>
-						<input type="text" placeholder="" id="JSBB_description" stype>
-						<br>
-						code: <br>
-						<textarea id="JSBB_code" style="width: 100%"></textarea>
-					</div>
-					<div class="col-1"></div>
-				</div>
-
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
-					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">apply</button>
-				</div>
-			</div>
-			<!-- /.modal-content -->
-		</div>
-		<!-- /.modal -->
-	</div>
-
-	<!-- Qgate -->
-	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="myModalLabel">Settings</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				</div>
-				<div class="center-block">
-					<form class="form-horizontal" align="center">
-						<fieldset>
-							<!-- Select Basic -->
-							<div class="controls" align="center">
-								<label class="control-label">gateType</label>
-								<select class="input-xlarge" id="Qgate_gtype">
-									<option>|0></option>
-									<option>|1></option>
-									<option>Identity</option>
-									<option>PauliX</option>
-									<option>PauliZ</option>
-									<option>PauliY</option>
-									<option>Hadamard</option>
-									<option>Phase</option>
-									<option>PiD8</option>
-									<option>CNOT</option>
-									<option>Measure</option>
-								</select>
-								<br>
-
-							</div>
-							<label class="control-label">&ensp;&ensp;inputSize</label>
-							<input type="number" placeholder="" id="Qgate_isize">
-							<br>
-							<label class="control-label">outputSize</label>
-							<input type="number" placeholder="" id="Qgate_osize">
-							<div class="control-group">
-								<!-- Multiple Checkboxes -->
-								<div class="controls">
-									<!-- Inline Checkboxes -->
-									<label class="checkbox inline">
-										<input type="checkbox" id="Qgate_fromJS"> fromJS
-									</label>
-									<label class="checkbox inline">
-										<input type="checkbox" id="Qgate_toJS"> toJS
-									</label>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="card mb-4 box-shadow">
+						<img class="card-img-top" data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail" alt="Thumbnail [100%x225]"
+						    style="height: 225px; width: 100%; display: block;" src="thumbnails/bell.png" data-holder-rendered="true">
+						<div class="card-body">
+							<div class="d-flex justify-content-between align-items-center">
+								<h3> Bell test </h3>
+								<small class="text-muted">done</small>
+								<div class="btn-group">
+									<div class="btn-group">
+										<a href="bell_test.html">
+											<button type="button" class="btn btn-sm btn-primary">Try it</button>
+										</a>
+										<a href="https://en.wikipedia.org/wiki/Bell_test_experiments">
+											<button type="button" class="btn btn-sm btn-outline-secondary">See wiki </button>
+										</a>
+									</div>
 								</div>
 							</div>
+							<p class="card-text">A Bell test experiment or Bell's inequality experiment, also simply a Bell test, is a real-world physics experiment
+								designed to test the theory of quantum mechanics in relation to two other concepts: the principle of locality and
+								Einstein's concept of "local realism"...</p>
 
-						</fieldset>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
-					<button type="button" class="btn btn-primary" onclick="closeQgateModal()" data-dismiss="modal">apply</button>
-				</div>
-			</div>
-			<!-- /.modal-content -->
-		</div>
-	</div>
-	<!-- Run_modal -->
-	<div class="modal fade bs-example-modal-lg" id="Run_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title" id="gridSystemModalLabel">Run settings</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-1"></div>
-						<div class="col-10">
-							<textarea id="Run_config" style="width: 100%" rows="5">
-	entry = function(programs) { for(var i in programs) {programs[i].run();}}
-							</textarea>
-							<div class="panel">
-								<div class="panel-body" style="word-break:break-all">
-									<p id="Run_text">
-										gzotpa
-									</p>
-								</div>
-							</div>
 						</div>
-						<div class="col-1"></div>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-					<button type="button" class="btn btn-danger" onclick="run()">GO!</button>
+				<div class="col-md-6">
+					<div class="card mb-4 box-shadow">
+						<img class="card-img-top" data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail" alt="Thumbnail [100%x225]"
+						    src="thumbnails/shor.png" data-holder-rendered="true" style="height: 225px; width: 100%; display: block;">
+						<div class="card-body">
+							<div class="d-flex justify-content-between align-items-center">
+
+								<h3> Shor algorithm</h3>
+								<small class="text-muted">fixing bugs</small>
+								<div class="btn-group">
+									<a href="shor_algorithm.html">
+										<button type="button" class="btn btn-sm btn-primary">Try it</button>
+									</a>
+									<a href="https://en.wikipedia.org/wiki/Shor%27s_algorithm">
+										<button type="button" class="btn btn-sm btn-outline-secondary">See wiki </button>
+									</a>
+								</div>
+							</div>
+							<p class="card-text">Shor's algorithm, named after mathematician Peter Shor, is a quantum algorithm (an algorithm that runs on a quantum
+								computer) for integer factorization formulated in 1994. Informally, it solves the following problem: given an integer
+								N, find its prime factors...</p>
+
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
