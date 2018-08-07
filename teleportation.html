@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>QuPlayground - Bell test</title>
+	<!--Gojs CDN-->
+	<script src="https://cdn.bootcss.com/gojs/1.8.20/go.js"></script>
+	<!--
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.25/go-debug.js"></script>
+		-->
+	<!--Bootstrap CDN-->
+	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-grid.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap-reboot.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.bundle.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.js"></script>
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+	
+	
+	<link href="json_syntax.css" rel="stylesheet">
+	<script src="json_syntax.js"></script>
+	<script src="qubit.js"></script>
+	<script id="code" src="main.js"></script>
+
+	
+</head>
+
+<body onload="init()">
+
+	<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+		<h3 class="my-0 mr-md-auto font-weight-normal"><a href="index.html">
+			<b>Qu</b>Playground</a></h3>
+		<nav class="my-2 my-md-0 mr-md-3">
+			<a class="p-2 text-dark" href="#">Developing</a>
+		</nav>		
+		<a class="btn btn-outline-primary" href="https://github.com/camelop/QuPlayground">Github page</a>
+	</div>
+	<div id="main" class="container">
+		<div style="width: 100%; display: flex; justify-content: space-between">
+			<div id="myPaletteDiv" style="width: 150px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
+			<div id="myDiagramDiv" style="flex-grow: 1; height: 600px; border: solid 1px black"></div>
+		</div>
+
+		<button type="button" class="btn btn-primary" style="width:24%" onclick="save()">
+			Save
+			<i class="fa fa-download fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-secondary" style="width:24%" onclick="load()">
+			Load
+			<i class="fa fa-upload fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-success" style="width:24%" onclick="refresh()">
+			Refresh
+			<i class="fa fa-refresh fa-1.5x"></i>
+		</button>
+		<button type="button" class="btn btn-danger" style="width:24%" onclick="openRunModal()">
+			Run
+			<i class="fa fa-play-circle fa-1.5x"></i>
+		</button>
+		<br>
+		<textarea class="form-control" id="mySavedModel" style="width:100%;height:150px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [ 
+{"key":"P1", "text":"Quantum Teleportation", "isGroup":true, "category":"Program", "loc":"0 0"},
+{"key":"P1S1", "text":"Step1", "isGroup":true, "group":"P1", "category":"Stage", "loc":"0 23.522847498307936", "size":"87.43962606276106 241.51215820312504"},
+{"key":"P1S2", "text":"Step2", "isGroup":true, "group":"P1", "category":"Stage", "loc":"89 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"a", "group":"P1S1", "category":"JSBB", "text":"init", "isize":0, "osize":1, "code":"init = function(input) {return input;}", "loc":"20 53.52284749830794"},
+{"key":"b", "group":"P1S1", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 149.52284749830795"},
+{"key":"e", "group":"P1S2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"109 149.52284749830795"},
+{"key":"base0_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 197.52284749830795", "group":"P1S1"},
+{"key":"P1S22", "text":"Step3", "isGroup":true, "group":"P1", "category":"Stage", "loc":"217 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"109 53.52284749830794", "group":"P1S2"},
+{"key":"CNOT", "category":"Qgate", "isize":2, "osize":2, "gtype":"CNOT", "loc":"237 149.52284749830795", "group":"P1S22", "fromJSBB":false, "toJSBB":false},
+{"key":"P1S222", "text":"Step4", "isGroup":true, "group":"P1", "category":"Stage", "loc":"345 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_2", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"237 53.52284749830794", "group":"P1S22"},
+{"key":"baseJS_3", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"365 53.52284749830794", "group":"P1S222"},
+{"key":"P1S2222", "text":"Step5", "isGroup":true, "group":"P1", "category":"Stage", "loc":"473 23.522847498307936", "size":"126.66650390625 241.51215820312504"},
+{"key":"base1_", "category":"Qgate", "isize":0, "osize":1, "gtype":"|0>", "loc":"20 101.52284749830794", "group":"P1S1", "fromJSBB":false, "toJSBB":false},
+{"key":"baseI_", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"109 101.52284749830794", "group":"P1S2"},
+{"key":"baseI_2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"237 101.52284749830794", "group":"P1S22"},
+{"key":"P1S22222", "text":"Step6", "isGroup":true, "group":"P1", "category":"Stage", "loc":"601 23.522847498307936", "size":"142.72607421875 241.51215820312504"},
+{"key":"CNOT_", "text":"CNOT", "category":"Qgate", "isize":2, "osize":2, "gtype":"CNOT", "u":[ [ [ 1,0 ],[ 0,0 ],[ 0,0 ],[ 0,0 ] ],[ [ 0,0 ],[ 1,0 ],[ 0,0 ],[ 0,0 ] ],[ [ 0,0 ],[ 0,0 ],[ 0,0 ],[ 1,0 ] ],[ [ 0,0 ],[ 0,0 ],[ 1,0 ],[ 0,0 ] ] ], "loc":"365 101.52284749830794", "group":"P1S222"},
+{"key":"baseH_", "category":"Qgate", "isize":1, "osize":1, "gtype":"Hadamard", "loc":"493 101.52284749830794", "group":"P1S2222"},
+{"key":"baseI_3", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"621 101.52284749830794", "group":"P1S22222"},
+{"key":"C_U_", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"621 149.52284749830795", "group":"P1S22222", "fromJSBB":true, "toJSBB":false},
+{"key":"baseJS_32", "category":"JSBB", "text":"prepareCX", "isize":0, "osize":0, "code":"CX = function(x) {\n  x.u = [\n[[1,0],[0,0],[0,0],[0,0]],\n[[0,0],[1,0],[0,0],[0,0]],\n[[0,0],[0,0],[0,0],[1,0]],\n[[0,0],[0,0],[1,0],[0,0]]\n];\n  return x;\n}", "loc":"493 53.52284749830794", "group":"P1S2222"},
+{"key":"baseJS_322", "category":"JSBB", "text":"prepareSwap", "isize":0, "osize":0, "code":"swap = function(x) {\n    x.from = [0,1];\n    x.to = [1,0];\n    return x;\n}", "loc":"621 53.52284749830794", "group":"P1S22222"},
+{"key":"P1S222222", "text":"Step7", "isGroup":true, "group":"P1", "category":"Stage", "loc":"745 23.522847498307936", "size":"126.55224609375 241.51215820312504"},
+{"key":"SWAP_", "text":"SWAP", "category":"Qgate", "isize":2, "osize":2, "gtype":"SWAP", "u":[], "loc":"765 101.52284749830794", "group":"P1S222222", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S2222222", "text":"Step8", "isGroup":true, "group":"P1", "category":"Stage", "loc":"873 23.522847498307936", "size":"142.72607421875 241.51215820312504"},
+{"key":"baseI_4", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"893 101.52284749830794", "group":"P1S2222222"},
+{"key":"C_U_2", "text":"C_U", "category":"Qgate", "isize":2, "osize":2, "gtype":"C_U", "u":[], "loc":"893 149.52284749830795", "group":"P1S2222222", "fromJSBB":true, "toJSBB":false},
+{"key":"baseJS_323", "category":"JSBB", "text":"prepareCZ", "isize":0, "osize":0, "code":"CZ = function(x) {\n  x.u = [\n[[1,0],[0,0],[0,0],[0,0]],\n[[0,0],[1,0],[0,0],[0,0]],\n[[0,0],[0,0],[1,0],[0,0]],\n[[0,0],[0,0],[0,0],[-1,0]]\n];\n  return x;\n}", "loc":"765 53.52284749830794", "group":"P1S222222"},
+{"key":"P1S22222222", "text":"Step9", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1017 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_322222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1037 53.52284749830794", "group":"P1S22222222"},
+{"key":"baseJS_3222", "category":"JSBB", "text":"prepareSwap", "isize":0, "osize":0, "code":"swap = function(x) {\n    x.from = [0,1];\n    x.to = [1,0];\n    return x;\n}", "loc":"893 53.52284749830794", "group":"P1S2222222"},
+{"key":"SWAP_2", "text":"SWAP", "category":"Qgate", "isize":2, "osize":2, "gtype":"SWAP", "u":[], "loc":"1037 101.52284749830794", "group":"P1S22222222", "fromJSBB":true, "toJSBB":false},
+{"key":"P1S222222222", "text":"Step10", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1145 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_3222222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1165 53.52284749830794", "group":"P1S222222222"},
+{"key":"baseM_", "category":"Qgate", "isize":1, "osize":1, "gtype":"Measure", "toJSBB":true, "loc":"1165 101.52284749830794", "group":"P1S222222222"},
+{"key":"baseM_2", "category":"Qgate", "isize":1, "osize":1, "gtype":"Measure", "toJSBB":true, "loc":"1165 149.52284749830795", "group":"P1S222222222"},
+{"key":"P1S2222222222", "text":"Step11", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1273 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_32222222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1293 53.52284749830794", "group":"P1S2222222222"},
+{"key":"baseI_5", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1293 101.52284749830794", "group":"P1S2222222222"},
+{"key":"baseI_6", "category":"Qgate", "isize":1, "osize":1, "gtype":"Identity", "loc":"1293 149.52284749830795", "group":"P1S2222222222"},
+{"key":"baseM_3", "category":"Qgate", "isize":1, "osize":1, "gtype":"Measure", "toJSBB":true, "loc":"1293 197.52284749830795", "group":"P1S2222222222"},
+{"key":"P1S22222222222", "text":"Step12", "isGroup":true, "group":"P1", "category":"Stage", "loc":"1401 23.522847498307936", "size":"126.38720703125 241.51215820312504"},
+{"key":"baseJS_322222222", "category":"JSBB", "text":"identity", "isize":0, "osize":0, "code":"identity = function(x) {return x;}", "loc":"1421 53.52284749830794", "group":"P1S22222222222"}
+ ],
+  "linkDataArray": [ 
+{"from":"base1_", "to":"baseI_"},
+{"from":"b", "to":"e"},
+{"from":"baseI_", "to":"baseI_2"},
+{"from":"e", "to":"CNOT"},
+{"from":"base0_", "to":"CNOT"},
+{"from":"baseI_2", "to":"CNOT_"},
+{"from":"CNOT", "to":"CNOT_"},
+{"from":"CNOT_", "to":"baseH_"},
+{"from":"baseH_", "to":"baseI_3"},
+{"from":"CNOT", "to":"C_U_"},
+{"from":"CNOT_", "to":"C_U_"},
+{"from":"baseJS_32", "to":"C_U_"},
+{"from":"baseI_3", "to":"SWAP_"},
+{"from":"C_U_", "to":"SWAP_"},
+{"from":"baseJS_322", "to":"SWAP_"},
+{"from":"SWAP_", "to":"baseI_4"},
+{"from":"SWAP_", "to":"C_U_2"},
+{"from":"C_U_", "to":"C_U_2"},
+{"from":"baseJS_323", "to":"C_U_2"},
+{"from":"baseI_4", "to":"SWAP_2"},
+{"from":"C_U_2", "to":"SWAP_2"},
+{"from":"baseJS_3222", "to":"SWAP_2"},
+{"from":"SWAP_2", "to":"baseM_"},
+{"from":"SWAP_2", "to":"baseM_2"},
+{"from":"baseM_", "to":"baseI_5"},
+{"from":"baseM_2", "to":"baseI_6"},
+{"from":"C_U_2", "to":"baseM_3"},
+{"from":"baseM_", "to":"baseJS_32222222"},
+{"from":"baseM_2", "to":"baseJS_32222222"},
+{"from":"baseM_3", "to":"baseJS_322222222"}
+ ]}
+		</textarea>
+	</div>
+	<!-- JSSB -->
+	<div class="modal fade" id="JSBB_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">Settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+
+				<div class="row">
+					<div class="col-1"></div>
+					<div class="col-10">
+						description: <br>
+						<input type="text" placeholder="" id="JSBB_description" stype>
+						<br>
+						code: <br>
+						<textarea id="JSBB_code" style="width: 100%"  rows="10"></textarea>
+					</div>
+					<div class="col-1"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeJSBBModal()" data-dismiss="modal">apply</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+
+	<!-- Qgate -->
+	<div class="modal fade" id="Qgate_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">Settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="center-block">
+					<form class="form-horizontal" align="center">
+						<fieldset>
+							<!-- Select Basic -->
+							<div class="controls" align="center">
+								<label class="control-label">gateType</label>
+								<select class="input-xlarge" id="Qgate_gtype">
+									<option>|0></option>
+									<option>|1></option>
+									<option>Identity</option>
+									<option>PauliX</option>
+									<option>PauliZ</option>
+									<option>PauliY</option>
+									<option>Hadamard</option>
+									<option>Phase</option>
+									<option>PiD8</option>
+									<option>CNOT</option>
+									<option>SWAP</option>
+									<option>C_U</option>
+									<option>Measure</option>
+								</select>
+								<br>
+
+							</div>
+							<label class="control-label">&ensp;&ensp;inputSize</label>
+							<input type="number" placeholder="" id="Qgate_isize">
+							<br>
+							<label class="control-label">outputSize</label>
+							<input type="number" placeholder="" id="Qgate_osize">
+							<div class="control-group">
+								<!-- Multiple Checkboxes -->
+								<div class="controls">
+									<!-- Inline Checkboxes -->
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_fromJS"> fromJS
+									</label>
+									<label class="checkbox inline">
+										<input type="checkbox" id="Qgate_toJS"> toJS
+									</label>
+								</div>
+							</div>
+
+						</fieldset>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+					<button type="button" class="btn btn-primary" onclick="closeQgateModal()" data-dismiss="modal">apply</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+	</div>
+	<!-- Run_modal -->
+	<div class="modal fade bs-example-modal-lg" id="Run_modal" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="gridSystemModalLabel">Run settings</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-1"></div>
+						<div class="col-10">
+							<textarea id="Run_config" style="width: 100%" rows="5">
+	entry = function(programs) { for(var i in programs) {programs[i].run();}}
+							</textarea>
+							<div class="panel">
+								<div class="panel-body" style="word-break:break-all">
+									<p id="Run_text">
+										gzotpa
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-1"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+					<button type="button" class="btn btn-danger" onclick="run()">GO!</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

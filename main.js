@@ -123,7 +123,7 @@ function Stage(node) {
   }
   this.check = function () {}
   this.run = function (input) {
-    Qcnt = {}
+    console.log("I = ", I);
     output = this.handle.run(input);
     if ((typeof(output)) == "undefined") output = input;
     if ((typeof(input)) == "undefined") input = {};
@@ -314,7 +314,7 @@ function Operator(node) {
     }
   }
   this.generate = function (input) {
-    //console.log("Generating "+this.name);
+    console.log("Generating "+this.name);
     var gtype = this.name;
     if (this.category != "Qgate") throw "JSBB cannot generate!";
     if (gtype === "|0>") {
@@ -1096,6 +1096,13 @@ function init() {
             isize: 1,
             osize: 1,
             gtype: "Hadamard"
+          },
+          {
+            key: "baseX_",
+            category: "Qgate",
+            isize: 1,
+            osize: 1,
+            gtype: "PauliX"
           },
           {
             key: "baseM_",

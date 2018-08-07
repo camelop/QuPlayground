@@ -111,6 +111,7 @@ function Qgate() {
 				}
 				this.u.push(nw);
 			}
+			console.log(a,b);
 			for(var i=0; i<a.u.length; ++i) {
 				var row_i = a.u[i];
 				for (var j=0; j<row_i.length; ++j) {
@@ -119,7 +120,7 @@ function Qgate() {
 						var row_ii = b.u[ii];
 						for (var jj=0; jj<row_ii.length; ++jj) {
 							var eb = row_ii[jj];
-							this.u[i*2**b.isize+ii][j*2**b.isize+jj] = times(ea, eb);
+							this.u[i*(2**b.isize)+ii][j*(2**b.isize)+jj] = times(ea, eb);
 						}
 					}
 				}
