@@ -76,6 +76,7 @@ factoring_to_order_finding = function(input) {
     }
     if (gcd(N, x) > 1) {
         // lucky strike
+        alert("LUCKY! gcd("+N+", "+x+") = "+gcd(N, x)+". No need for Quantum circuit.");
         output.success = true;
         output.a = gcd(N, x);
         output.b = N/gcd(N, x);
@@ -83,5 +84,6 @@ factoring_to_order_finding = function(input) {
     }
     // then Quantum circuit is used
     output.x = x;
+    output.n = N;
     return output;
 }

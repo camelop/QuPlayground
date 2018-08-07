@@ -71,7 +71,7 @@ function Qstat() {
 			throw "Invalid Qstat init";
 	}
 	this.print = function() {
-		ret = "[";
+		var ret = "[";
 		for (var i in this.state) {
 			var nw = this.state[i];
 			if (nw[1] == 0) {
@@ -111,6 +111,7 @@ function Qgate() {
 				}
 				this.u.push(nw);
 			}
+			console.log(a,b)
 			for(var i=0; i<a.u.length; ++i) {
 				var row_i = a.u[i];
 				for (var j=0; j<row_i.length; ++j) {
@@ -172,10 +173,45 @@ CNOT = new Qgate(2, 2, [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[
 I = PauliI; X = PauliX; Z = PauliZ; Y = PauliY;
 H = Hadamard; S = Phase; T = PiD8;
 
+function SWAP(_qsize, _from, _to) {
+	var u = [];
+	for (var i=0; i<2**_qsize; ++i) {
+		var nw = [];
+		for (var j=0; j<2**_qsize; ++j) {
+			nw.push([0,0]);
+		}
+		u.push(nw);
+	}
+	var two = [];
+	for (var i=0; i<=Math.max(Math.max(_from),Math.max(_to)); ++i) {
+		two.push((1<<i));
+	}
+	var bitchange = function(x) {
+		var y=x;
+		for (var i=0; i<_from.length; ++i) {
+			var ff = _from[i];
+			var tt = _to[i];
+			if (y & two[ff]) y-=two[ff];
+			if (y & two[tt]) y-=two[tt];
+			if (x & two[ff]) y+=two[tt];
+			if (x & two[tt]) y+=two[ff];
+		}
+		return y;
+	}
+	for (var i=0; i<2**_qsize; ++i) {
+		u[i][bitchange(i)] = [1, 0];
+	}
+	return new Qgate(_qsize, _qsize, u);
+}
+
 //perform a transform
 function perform(qgate, qstat, loc) {
 	if (typeof(loc) == "undefined") {
-		if (qstat.qsize != qgate.isize) throw "Wrong shape while performing \n"+qgate.print()+" on \n"+JSON.stringify(qstat);
+		if (qstat.qsize != qgate.isize) {
+			console.log(qgate)
+			console.log(qstat)
+			throw "Wrong shape while performing \n["+qgate.isize+"->"+qgate.osize+"] on \n"+JSON.stringify(qstat);
+		}
 		var ret = new Qstat();
 		ret.qsize = qgate.osize;
 		for (i in qgate.u[0]) ret.state.push([0, 0]);

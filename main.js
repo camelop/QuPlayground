@@ -75,6 +75,8 @@ function Program(node) {
     try {
       var info = input;
       for (var i in this.stage) {
+        if (typeof(info) != "undefined" && info.success)
+          break;
         nw = this.stage[i];
         info = nw.run(info);
         console.log(info);
@@ -180,6 +182,7 @@ function Operator(node) {
   this.fromJSBB = node.data.fromJSBB;
   this.toJSBB = node.data.toJSBB;
   this.run = function (input, all) {
+    console.log("Running "+this.name)
     if (this.category == "JSBB") {
       var code = this.node.data.code;
       var entry = eval(this.node.data.code);
@@ -238,7 +241,39 @@ function Operator(node) {
         }
         return ret;
       } else if (gtype === "SWAP") {
-        // TODO
+        var _from = all.from;
+        var _to = all.to;
+        // need to consider SWAP between two system
+        var new_stat = input[0];
+        var last = input[0];
+        if (!(input[0].id in Qcnt)) Qcnt[input[0].id]=0;
+        var begin_ptr = Qcnt[input[0].id];
+        var leftIsize = this.isize;
+        Qcnt[input[0].id] += Math.min(leftIsize, input[0].qsize - begin_ptr);
+        leftIsize -= Math.min(leftIsize, input[0].qsize - begin_ptr);
+        for (var i=1; i<this.isize; ++i) {
+          if (input[i].id == last.id) continue;
+          last = input[i];
+          if (!(input[i].id in Qcnt)) Qcnt[input[i].id]=0;
+          new_stat = new Qstat(new_stat, input[i]);
+          Qcnt[input[i].id] += Math.min(leftIsize, input[i].qsize);
+          leftIsize -= Math.min(leftIsize, input[i].qsize);
+        }
+        if (last.id != input[0].id) {
+          Qcnt[new_stat.id] = begin_ptr;
+        }
+        // construct bitwise swap matrix
+        for (var i=0; i<_from.length; ++i) {
+          _from[i] += begin_ptr;
+          _to[i] += begin_ptr;
+        }
+        // apply
+        new_stat = perform(new SWAP(new_stat.qsize, _from, _to), new_stat, begin_ptr);
+        var ret = [];
+        for (var i=0; i<this.osize; ++i) {
+          ret.push(new_stat);
+        }
+        return ret;
       } else if (gtype === "Measure") {
         var nw_id = input[0].id;
         var to_measure = [];
@@ -512,7 +547,6 @@ function updateCrossStepLinks() {
         r_cnt--;
       }
     }
-    console.log(l_cnt, l_ptr, group_v[g_l.key].length,r_cnt,  r_ptr, group_v[g_r.key].length)
     while (l_cnt > 0) {      
       bin.push(group_v[g_l.key][l_ptr].key)
       l_cnt--;
@@ -550,7 +584,6 @@ function updateCrossStepLinks() {
       r_cnt--;
     }
 
-    console.log(l, bin_f, bin)
     // sp JSBB
     for (i = 0; i < group_v[g_l.key].length; ++i) {
       ll = group_v[g_l.key][i];
@@ -661,7 +694,9 @@ function init() {
   function QgateColorConverter(nodeData, elt) {
     if (nodeData.gtype == "Measure") return "green";
     if (nodeData.gtype == "C_U") return "purple"; 
+    if (nodeData.gtype == "CNOT") return "purple"; 
     if (nodeData.gtype == "Hadamard") return "DodgerBlue"; 
+    if (nodeData.gtype == "SWAP") return "FireBrick"; 
     return "blue";
   }
 
@@ -948,7 +983,7 @@ function init() {
           {
             key: "baseJS_",
             category: "JSBB",
-            text: "identity",
+            text: "JS_identity",
             isize: 0,
             osize: 0,
             code: "identity = function(x) {return x;}"
@@ -990,15 +1025,6 @@ function init() {
             toJSBB: true
           },
           {
-            key: "CNOT_", 
-            text: "CNOT",
-            category: "Qgate",
-            isize: 2,
-            osize: 2,
-            gtype: "CNOT",
-            u: [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]], [[0,0],[0,0],[1,0],[0,0]]]
-          },
-          {
             key: "SWAP_",
             text: "SWAP",
             category: "Qgate",
@@ -1006,6 +1032,15 @@ function init() {
             osize: 2,
             gtype: "SWAP",
             u: []
+          },
+          {
+            key: "CNOT_", 
+            text: "CNOT",
+            category: "Qgate",
+            isize: 2,
+            osize: 2,
+            gtype: "CNOT",
+            u: [[[1,0],[0,0],[0,0],[0,0]], [[0,0],[1,0],[0,0],[0,0]], [[0,0],[0,0],[0,0],[1,0]], [[0,0],[0,0],[1,0],[0,0]]]
           },
           {
             key: "C_U_",
